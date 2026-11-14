@@ -1,0 +1,39 @@
+site_name: What Survives
+site_description: Measuring legislative alteration of voter-approved ballot initiatives
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+nav:
+  - Home: index.md
+  - Project:
+      - Overview: project/overview.md
+      - How we got here: project/history.md
+  - Method:
+      - Pipeline: method/pipeline.md
+      - Schema: method/schema.md
+      - Validation: method/validation.md
+      - Case selection: method/case-selection.md
+  - Workflow: workflow/workflow.md
+  - Logs:
+      - How the logs work: log/index.md
+      - Schema changelog: log/schema-changelog.md
+      - Friction log: log/friction-log.md
+      - Timing: log/timing.md
+      - Experiments:
+          - E001 Prop A prototype: log/experiments/E001-prop-a-prototype.md
+          - Template: log/experiments/_template.md
+      - Decisions:
+          - "0001 Provision unit": log/decisions/0001-provision-unit.md
+          - "0002 Spine IDs": log/decisions/0002-spine-ids.md
+          - "0003 Layered schema": log/decisions/0003-layered-schema.md
+          - "0004 Gold is hand-coded": log/decisions/0004-gold-is-hand-coded.md
+          - "0005 Provenance and denominator": log/decisions/0005-provenance-denominator.md
+          - "0006 Diverse-case selection": log/decisions/0006-diverse-case-selection.md
+  - Glossary: glossary.md
