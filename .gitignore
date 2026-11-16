@@ -6,3 +6,4 @@ __pycache__/
 site/
 out/
 .cache/
+docs/design/refs/
