@@ -21,7 +21,7 @@ export function renderStrip(caseObj, opts) {
   });
 
   let sec = null, secCells = null, secKey = Symbol('none'), secWeight = 0;
-  const closeSec = () => { if (sec) sec.style.flexGrow = String(Math.max(secWeight, 1)); };
+  const closeSec = () => { if (sec) sec.style.setProperty('--g', String(Math.max(secWeight, 1))); };
 
   for (const p of caseObj.provisions) {
     if (p.section !== secKey) {
@@ -50,7 +50,7 @@ export function renderStrip(caseObj, opts) {
       class: [st.cls, p.isComponent ? 'is-component' : '', p.provenance === 'inherited' ? 'is-inherited' : '',
         hidden ? 'is-hidden-change' : '', p.id === selectedId ? 'is-selected' : '',
         picked !== undefined && picked === key ? 'is-picked' : ''].join(' '),
-      style: `${st.style}; flex-grow:${weight}`,
+      style: `${st.style}; --g:${weight}`,
       'aria-label': describe,
       'aria-current': p.id === selectedId ? 'true' : null,
       tabindex: '-1',

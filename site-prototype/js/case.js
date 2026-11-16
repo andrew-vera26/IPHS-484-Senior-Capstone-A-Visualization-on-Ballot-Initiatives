@@ -1,5 +1,5 @@
 // case.js — the edition of one law.
-import { h, clear, params, setParams, fmt, notCoded, routeBadge, figure, segmented } from './util.js';
+import { h, clear, fill, params, setParams, fmt, notCoded, routeBadge, figure, segmented } from './util.js';
 import { loadCorpus, loadCodebookText, exportRows } from './data.js';
 import { mountChrome, getMode, onMode } from './chrome.js';
 import { LENSES, lensesFor, validLens, buildDomains, buildLegend, valueLabel, valueStyle } from './encode.js';
@@ -17,7 +17,7 @@ const caseObj = corpus.caseById.get(q.get('case')) || null;
 
 if (!caseObj) {
   const entry = corpus.entries.find((e) => e.title === q.get('title'));
-  main.append(
+  fill(main,
     h('h1.page-title', {}, entry ? entry.title : 'Case'),
     entry ? h('p', {}, routeBadge(entry.route, { long: true })) : null,
     notCoded(entry
@@ -134,7 +134,7 @@ function run(c) {
   }
 
   function drawLens() {
-    clear(lensHost).append(segmented({
+    fill(lensHost, segmented({
       label: 'Color by',
       value: state.lens,
       options: lensesFor(state.mode).map((l) => ({ value: l.key, label: l.label, title: `Layer ${l.layer}: ${l.name}` })),
@@ -142,7 +142,7 @@ function run(c) {
     }));
     subHost.textContent = LENSES[state.lens].subtitle +
       (state.mode === 'facts' ? ' Facts only: the interpretive layers (3 and 4) are hidden.' : '');
-    clear(legendHost).append(buildLegend(c.provisions, state.lens, domains, {
+    fill(legendHost, buildLegend(c.provisions, state.lens, domains, {
       picked: state.picked, codebookText,
       onPick: (v) => { state.picked = v; setParams({ value: v ?? null }); drawAll(); },
     }));
@@ -154,7 +154,7 @@ function run(c) {
       picked: state.picked, selectedId: state.selected, onSelect: (p) => select(p),
     });
     const hadFocus = stripHost.contains(document.activeElement) ? document.activeElement.dataset.id : null;
-    clear(stripHost).append(strip);
+    fill(stripHost, strip);
     if (hadFocus) strip.querySelector(`[data-id="${hadFocus}"]`)?.focus();
     attachReadout(strip, readout, state.lens, 'Point at a cell, or use the arrow keys, to identify a provision. Select it to read both texts.');
     fig.classList.toggle('deps-on', state.deps);
@@ -164,7 +164,7 @@ function run(c) {
 
   function drawMarks() {
     const cts = c.counts;
-    clear(marksLegend).append(
+    fill(marksLegend, 
       cts.hasDenominatorFlag
         ? h('li', {}, h('span.mk.mk-comp'), `Component: completes its parent, outside the denominator (${fmt(cts.components)})`)
         : h('li', {}, h('span.mk.mk-unknown'), 'Component flag: ', notCoded(null, { inline: true })),
@@ -228,7 +228,7 @@ function run(c) {
             all - inDen ? h('span.muted', {}, ` (plus ${fmt(all - inDen)} outside the denominator)`) : null);
         }))
       : notCoded('This file has no counts_in_denominator field, so the denominator rule cannot be applied. Layer 1 over all records is shown in the legend above, and is not a survival count.');
-    clear(summaryHost).append(h('section.summary', { 'aria-label': 'Computed counts' },
+    fill(summaryHost, h('section.summary', { 'aria-label': 'Computed counts' },
       h('h2.section-label', {}, 'Counts for this case, computed from the file'),
       h('div.stats', {},
         stat(cts.records, 'records', 'cells on the strip'),
@@ -269,7 +269,7 @@ function run(c) {
   function drawTable() {
     const interp = state.mode !== 'facts';
     const head = ['ID', 'Section', 'What happened', 'Type', ...(interp ? ['Direction', 'Mechanism'] : []), 'Provenance', 'Unit'];
-    clear(tableHost).append(h('div.table-scroll', {}, h('table.table', {},
+    fill(tableHost, h('div.table-scroll', {}, h('table.table', {},
       h('thead', {}, h('tr', {}, ...head.map((t) => h('th', { scope: 'col' }, t)))),
       h('tbody', {}, ...c.provisions.map((p) => h('tr', {},
         h('th', { scope: 'row' }, h('a', { href: permalink(p), onclick: (e) => { e.preventDefault(); select(p); } }, h('code', {}, p.short))),

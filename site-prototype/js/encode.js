@@ -20,7 +20,7 @@ const FIXED = {
   l1: ['unchanged', 'partially deleted', 'rewritten', 'deleted entirely'],
   l3: ['narrows', 'expands', 'neutral', 'indeterminate'],
 };
-const QUAL = 12; // --q0 … --q11 in site.css (Paul Tol "muted", color-blind safe)
+const QUAL = 18; // --q0 … --q17 in site.css (Paul Tol "muted", color-blind safe)
 
 /** Sorted distinct values per lens across every loaded case, so colors are stable between cases. */
 export function buildDomains(cases) {
@@ -54,7 +54,7 @@ export const valueAnchor = (lensKey, value) => `${lensKey}-${slug(value ?? 'none
  * Legend for one case under one lens. Counts are computed from the provisions given.
  * onPick(value|undefined) toggles a highlight; `picked` is the current one ('__none__' for null).
  */
-export function buildLegend(provisions, lensKey, domains, { picked, onPick, methodLinks = true, codebookText } = {}) {
+export function buildLegend(provisions, lensKey, domains, { picked, onPick, methodLinks = true, codebookText, showCounts = true } = {}) {
   const counts = new Map();
   for (const p of provisions) {
     const v = p[LENSES[lensKey].field];
@@ -67,14 +67,14 @@ export function buildLegend(provisions, lensKey, domains, { picked, onPick, meth
     const key = v === null ? '__none__' : v;
     const notInCodebook = codebookText && v !== null && !codebookText.includes('`' + v + '`');
     list.append(h('li', {},
-      h('button.legend-item', {
+      h(onPick ? 'button.legend-item' : 'span.legend-item.legend-static', onPick ? {
         type: 'button', 'aria-pressed': String(picked === key),
         title: 'Show only this value on the strip',
-        onclick: () => onPick && onPick(picked === key ? undefined : key),
-      },
+        onclick: () => onPick(picked === key ? undefined : key),
+      } : {},
         h(`span.swatch.${st.cls}`, { style: st.style, 'aria-hidden': 'true' }),
         h('span.legend-name', {}, valueLabel(lensKey, v)),
-        h('span.legend-n', {}, String(counts.get(v)))),
+        showCounts ? h('span.legend-n', {}, String(counts.get(v))) : null),
       notInCodebook ? h('span.legend-flag', { title: 'This value appears in the data but not in spec/codebook.md' }, 'not in codebook') : null,
       methodLinks ? h('a.legend-q', { href: `method.html#${valueAnchor(lensKey, v)}`, title: 'Where this value is defined', 'aria-label': `Method: ${valueLabel(lensKey, v)}` }, '?') : null));
   }

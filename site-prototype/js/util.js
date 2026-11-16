@@ -31,6 +31,8 @@ function append(el, children) {
 }
 
 export const clear = (el) => { el.replaceChildren(); return el; };
+/** Replace an element's children; null and false children are skipped (native append would print them). */
+export function fill(el, ...children) { el.replaceChildren(); append(el, children); return el; }
 
 export const params = () => new URLSearchParams(location.search);
 
