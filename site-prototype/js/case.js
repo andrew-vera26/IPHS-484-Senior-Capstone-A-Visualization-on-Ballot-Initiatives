@@ -39,6 +39,7 @@ function run(c) {
     deps: q.get('deps') === '1',
     byLength: q.get('w') === 'len',
     diff: true,
+    rawBreaks: q.get('br') === '1',
   };
 
   const permalink = (p) => {
@@ -253,10 +254,11 @@ function run(c) {
       return;
     }
     const panel = renderPanel(c, p, {
-      mode: state.mode, domains, diffOn: state.diff, permalink,
+      mode: state.mode, domains, diffOn: state.diff, rawBreaks: state.rawBreaks, permalink,
       onSelect: (x) => select(x),
       onClose: () => { const id = state.selected; select(null, { focusPanel: false }); stripHost.querySelector(`[data-id="${id}"]`)?.focus(); },
       onToggleDiff: (v) => { state.diff = v; drawPanel(false); },
+      onToggleBreaks: (v) => { state.rawBreaks = v; setParams({ br: v ? '1' : null }); drawPanel(false); },
     });
     panelHost.append(panel);
     if (focus) {

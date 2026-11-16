@@ -337,11 +337,16 @@ summary:hover { color: var(--ink); }
 .wit-head { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; border-bottom: 1px solid var(--rule); padding-bottom: 8px; margin-bottom: 12px; }
 .wit-name { font: 700 12px/1.2 var(--sans); letter-spacing: 0.1em; text-transform: uppercase; }
 .wit-id { text-transform: none; letter-spacing: 0.02em; font-weight: 400; }
-.wit-text { font: 400 16.5px/1.62 var(--serif); white-space: pre-wrap; overflow-wrap: anywhere; max-height: 62vh; overflow-y: auto; padding-right: 6px; }
+.wit-para { display: block; margin: 0 0 0.75em; }
+.wit-para:last-child { margin-bottom: 0; }
+.wit-text.is-raw { white-space: pre-wrap; }
+.wit-text.is-raw .wit-para { display: inline; margin: 0; }
+.wit-text { font: 400 16.5px/1.62 var(--serif); white-space: normal; overflow-wrap: anywhere; max-height: 62vh; overflow-y: auto; padding-right: 6px; }
 .wit-none { font: 400 14.5px/1.5 var(--sans); color: var(--ink-2); margin: 0; padding: 14px 16px; border: 1px dashed var(--ink-3);
   background: repeating-linear-gradient(135deg, transparent 0 9px, var(--rule-soft) 9px 10px); }
 .diff { background: var(--mark); box-shadow: 0 0 0 1.5px var(--mark); border-radius: 1px; }
-.diff-toggle { display: block; padding: 9px 22px; border-top: 1px solid var(--rule); font: 400 13px/1.4 var(--sans); cursor: pointer; }
+.text-opts { border-top: 1px solid var(--rule); padding: 5px 0; }
+.diff-toggle { display: block; padding: 4px 22px; font: 400 13px/1.4 var(--sans); cursor: pointer; }
 .diff-note { color: var(--ink-2); }
 .apparatus { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); }
 .apparatus > section { padding: 16px 22px 20px; border-bottom: 1px solid var(--rule); min-width: 0; }

@@ -1,17 +1,38 @@
 // panel.js — the side-by-side reading panel for one provision.
-// Stored text is written with textContent only. Highlighting wraps existing
-// words in spans and never changes a character.
+// Stored text is written as text nodes only. Highlighting and paragraph display
+// wrap existing characters in spans and never change one.
 import { h, notCoded } from './util.js';
 import { wordDiff } from './diff.js';
 import { copyText } from './export.js';
 import { valueStyle, valueAnchor, valueLabel } from './encode.js';
 import { provisionHref } from './strip.js';
 
-function textColumn(tokens, text) {
-  const body = h('div.wit-text');
-  if (tokens) {
-    for (const t of tokens) body.append(t.changed ? h('span.diff', {}, t.text) : document.createTextNode(t.text));
-  } else {
+const BLANK_LINE = /\n[^\S\n]*\n/;      // a paragraph break as stored
+const LONE_BREAK = /(^|[^\n])\n(?!\n)/;  // a single line break inside a paragraph
+
+/**
+ * One witness text. Every stored character goes into the DOM unchanged, in order.
+ * For reading, each run of text between blank lines is wrapped in its own block
+ * and CSS draws the single line breaks inside it as spaces. With `raw` the stored
+ * line breaks are drawn as they are. Either way textContent equals the stored text;
+ * if that check ever fails, the text is written plainly with its breaks as stored.
+ */
+function textColumn(tokens, text, raw) {
+  const body = h('div.wit-text', { class: raw ? 'is-raw' : '' });
+  const pieces = tokens || text.split(/(\s+)/).filter((t) => t !== '').map((t) => ({ text: t, changed: false }));
+  let para = null;
+  for (const t of pieces) {
+    if (!t.changed && /^\s+$/.test(t.text) && BLANK_LINE.test(t.text)) {
+      body.append(document.createTextNode(t.text));   // stays in the DOM, between two blocks
+      para = null;
+      continue;
+    }
+    if (!para) body.append(para = h('span.wit-para'));
+    para.append(t.changed ? h('span.diff', {}, t.text) : document.createTextNode(t.text));
+  }
+  if (body.textContent !== text) {
+    console.error('Stored text did not survive paragraph display; showing it as stored.');
+    body.className = 'wit-text is-raw';
     body.textContent = text;
   }
   return body;
@@ -25,7 +46,7 @@ function valueChip(lensKey, value, domains) {
 
 const row = (label, ...content) => h('div.kv', {}, h('dt', {}, label), h('dd', {}, ...content));
 
-export function renderPanel(caseObj, p, { mode, domains, diffOn, onSelect, onClose, onToggleDiff, permalink }) {
+export function renderPanel(caseObj, p, { mode, domains, diffOn, rawBreaks, onSelect, onClose, onToggleDiff, onToggleBreaks, permalink }) {
   const interp = mode !== 'facts';
   const provs = caseObj.provisions;
   const prev = provs[p.index - 1], next = provs[p.index + 1];
@@ -61,7 +82,7 @@ export function renderPanel(caseObj, p, { mode, domains, diffOn, onSelect, onClo
       h('span.wit-name', {}, caseObj.route === 'B' ? 'Text as adopted' : 'Voter-enacted text'),
       h('span.wit-id', {}, 'base witness')),
     p.baseText !== null
-      ? textColumn(diff?.a, p.baseText)
+      ? textColumn(diff?.a, p.baseText, rawBreaks)
       : h('p.wit-none', {}, 'No text stored for this witness. The base witness text is null in the data for this record.'));
 
   const compCol = h('section.wit', { 'aria-label': `Text after ${billName}` },
@@ -69,7 +90,7 @@ export function renderPanel(caseObj, p, { mode, domains, diffOn, onSelect, onClo
       h('span.wit-name', {}, `After ${billName}`),
       h('span.wit-id', {}, 'comparison witness ', h('code', {}, p.witnessId || ''))),
     p.compText !== null
-      ? textColumn(diff?.b, p.compText)
+      ? textColumn(diff?.b, p.compText, rawBreaks)
       : h('p.wit-none', {}, 'No text stored for this witness. Structural operation recorded: ', h('b', {}, p.l1), '.'));
 
   const diffNote = both
@@ -80,6 +101,15 @@ export function renderPanel(caseObj, p, { mode, domains, diffOn, onSelect, onClo
           ? '(texts too long to compare in the browser)'
           : '(a mechanical word comparison made in your browser; it is not coded evidence, and no text is altered)'))
     : null;
+  // Offered only when a stored text has line breaks inside a paragraph, which is the only thing the display changes.
+  const hasLoneBreaks = [p.baseText, p.compText].some((t) => t !== null && LONE_BREAK.test(t));
+  const breaksNote = hasLoneBreaks
+    ? h('label.diff-toggle', {},
+        h('input', { type: 'checkbox', checked: rawBreaks, onchange: (e) => onToggleBreaks(e.target.checked) }),
+        ' Show line breaks as stored ',
+        h('span.diff-note', {}, '(for reading, a line break inside a paragraph is drawn as a space; no word or character is changed, added or removed)'))
+    : null;
+  const textOpts = diffNote || breaksNote ? h('div.text-opts', {}, diffNote, breaksNote) : null;
 
   const facts = h('dl.kvs', {},
     row('What happened', valueChip('l1', p.l1, domains), h('span.layer-tag', {}, 'Layer 1')),
@@ -129,7 +159,7 @@ export function renderPanel(caseObj, p, { mode, domains, diffOn, onSelect, onClo
       h('span.panel-pos', {}, `Record ${p.index + 1} of ${provs.length}`),
       next ? h('a', { href: provisionHref(caseObj, next), onclick: (e) => { e.preventDefault(); onSelect(next); } }, `${next.short} ›`) : h('span')),
     h('div.wits', {}, baseCol, compCol),
-    diffNote,
+    textOpts,
     h('div.apparatus', {},
       h('section', {}, h('h4', {}, 'Facts'), facts),
       h('section', {}, h('h4', {}, 'Interpretation'), interpretation),
