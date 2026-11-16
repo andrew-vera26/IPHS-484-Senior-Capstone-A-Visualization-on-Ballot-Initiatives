@@ -41,7 +41,7 @@
   --cell-h: 54px;
   /* Vertical rhythm: every layout-level vertical margin, padding and row gap is a base value times this.
      Horizontal spacing, control and cell sizes, and the masthead are not scaled. */
-  --vs: 1.22;
+  --vs: 1.4;
   color-scheme: light;
 }
 
