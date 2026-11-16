@@ -32,15 +32,16 @@ export function setMode(mode) {
 
 export const onMode = (fn) => window.addEventListener('ws:mode', (e) => fn(e.detail));
 
+// Light is the default theme. Dark is the reader's choice, kept in localStorage.
 function applyTheme(theme) {
-  if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+  if (theme === 'dark') document.documentElement.dataset.theme = 'dark';
   else delete document.documentElement.dataset.theme;
 }
 
 export function mountChrome(active) {
   const mode = getMode();
   document.documentElement.dataset.mode = mode;
-  let theme = store.get('ws-theme') || 'auto';
+  let theme = store.get('ws-theme') === 'dark' ? 'dark' : 'light';
   applyTheme(theme);
 
   const banner = h('div.banner', { role: 'note', 'aria-label': 'Data status' },
@@ -58,15 +59,17 @@ export function mountChrome(active) {
         },
       }, label)));
 
+  const themeLabel = () => (theme === 'dark' ? 'Light theme' : 'Dark theme');
   const themeBtn = h('button.theme-btn', {
-    type: 'button', title: 'Switch theme: auto, light, dark',
+    type: 'button', title: 'Switch between the light and dark themes', 'aria-pressed': String(theme === 'dark'),
     onclick: () => {
-      theme = { auto: 'light', light: 'dark', dark: 'auto' }[theme];
+      theme = theme === 'dark' ? 'light' : 'dark';
       store.set('ws-theme', theme);
       applyTheme(theme);
-      themeBtn.textContent = `Theme: ${theme}`;
+      themeBtn.textContent = themeLabel();
+      themeBtn.setAttribute('aria-pressed', String(theme === 'dark'));
     },
-  }, `Theme: ${theme}`);
+  }, themeLabel());
 
   const mast = h('header.mast', {},
     h('div.mast-inner', {},

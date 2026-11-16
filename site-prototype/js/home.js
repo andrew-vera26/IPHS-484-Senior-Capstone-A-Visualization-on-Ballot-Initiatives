@@ -60,7 +60,8 @@ function sortCases(list) {
 function draw() {
   const routes = state.route === 'all' ? ['A', 'B'] : [state.route];
   const body = h('div.multi');
-  const readout = h('div.readout');
+  const readout = h('div.readout.readout-top');
+  body.append(readout);
   for (const r of routes) {
     const coded = sortCases(corpus.codedByRoute(r));
     const candidates = sortCases(corpus.byRoute(r).filter((e) => !e.coded));
@@ -73,22 +74,24 @@ function draw() {
       body.append(h('div.multi-row', {},
         h('div.multi-label', {},
           h('a', { href: `case.html?case=${c.id}` }, c.title),
-          h('div.multi-meta', {}, `${c.state}, ${c.year}`, h('span', {}, '·'), `topic: ${c.context.topic ?? '—'}`, h('span', {}, '·'),
-            `${fmt(c.counts.records)} records`)),
+          h('div.multi-meta', {}, h('span', {}, `${c.state}, ${c.year}`), h('span', {}, `topic: ${c.context.topic ?? '—'}`),
+            h('span', {}, `${fmt(c.counts.records)} records`))),
         strip));
     }
-    if (!coded.length) {
-      body.append(h('div.multi-row.is-candidate', {}, h('div.multi-label', {}, `No coded Route ${r} case`),
-        h('div.ghost-strip', {}, h('span.not-coded', {}, 'Not coded yet'),
-          h('span', {}, 'Needs the adopted text, the amending bill, and provision-level coding for at least one case.'))));
-    }
-    for (const e of candidates) {
-      body.append(h('div.multi-row.is-candidate', {},
-        h('div.multi-label', {}, e.title, h('div.multi-meta', {}, `${e.state}, ${e.year}`)),
-        h('div.ghost-strip', {}, h('span.not-coded', {}, 'Not coded yet'), h('span', {}, 'Candidate, unverified.'))));
+    // What is missing, said once per route: one line, then the candidates as a compact list.
+    const n = candidates.length, noun = n === 1 ? 'candidate' : 'candidates';
+    const corpusLink = h('a', { href: `corpus.html?route=${r}` }, 'See the corpus');
+    const line = coded.length
+      ? (n ? [` ${fmt(n)} Route ${r} ${noun}, unverified. Each needs its texts collected from primary sources and its provisions coded. `, corpusLink, '.'] : null)
+      : [` No Route ${r} case is coded. Needs the adopted text, the amending bill, and provision-level coding for at least one case.`,
+          n ? [` ${fmt(n)} ${noun}, unverified. `, corpusLink, '.'] : null];
+    if (line) {
+      body.append(h('div.cand', {},
+        h('p.cand-head', {}, h('span.not-coded', {}, 'Not coded yet'), line),
+        n ? h('ul.cand-list', {}, ...candidates.map((e) =>
+          h('li', {}, h('span.cand-title', {}, e.title), h('span.cand-meta', {}, `${e.state}, ${e.year}`)))) : null));
     }
   }
-  body.append(readout);
 
   const controls = [
     segmented({ label: 'Color by', value: state.lens,

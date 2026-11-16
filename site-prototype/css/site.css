@@ -42,18 +42,7 @@
   color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper: #16151a; --surface: #1e1d23; --ink: #ece8df; --ink-2: #b9b3a7; --ink-3: #8b8579;
-    --rule: #3a3841; --rule-soft: #2a2930; --link: #9cc3e8;
-    --banner-bg: #ece8df; --banner-ink: #16151a; --mark: #6b5a17;
-    --l1-unchanged: #8b8579; --l1-partial: #e3a93f; --l1-rewritten: #6fb1d3; --l1-deleted: #d0566a;
-    --l3-narrows: #e08a5b; --l3-expands: #57bda9; --l3-neutral: #8b8579;
-    --route-a: #8fbbe6; --route-b: #d9a55a;
-    --q0: #8f85e0; --q10: #c0705a;
-    color-scheme: dark;
-  }
-}
+/* Light is the default. Dark applies only when the reader chooses it (js/chrome.js). */
 :root[data-theme="dark"] {
   --paper: #16151a; --surface: #1e1d23; --ink: #ece8df; --ink-2: #b9b3a7; --ink-3: #8b8579;
   --rule: #3a3841; --rule-soft: #2a2930; --link: #9cc3e8;
@@ -405,7 +394,18 @@ a.dep-chip:hover { border-color: var(--ink); }
 .multi-row { display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--rule-soft); }
 .multi-label a { font: 600 18px/1.25 var(--serif); color: var(--ink); text-decoration-color: var(--rule); }
 .multi-meta { font: 400 12.5px/1.5 var(--sans); color: var(--ink-2); margin-top: 5px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-.multi-row.is-candidate .multi-label { font: 400 16px/1.3 var(--serif); color: var(--ink-2); }
+.multi-meta { gap: 0 14px; }
+.readout-top { margin-top: 0; border-top: 0; padding-top: 0; }
+.readout-top + .route-group-head { margin-top: 10px; }
+.multi-meta span { white-space: nowrap; }
+.cand-head { font: 400 13.5px/1.6 var(--sans); color: var(--ink-2); margin: 0; }
+.cand-head .not-coded { margin-right: 6px; }
+.cand { padding: 14px 0 4px; }
+.cand-list { list-style: none; margin: 8px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 0 28px;
+  border-top: 1px dashed var(--ink-3); }
+.cand-list li { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; padding: 7px 0; border-bottom: 1px solid var(--rule-soft); }
+.cand-title { font: 400 15.5px/1.3 var(--serif); color: var(--ink-2); }
+.cand-meta { font: 400 12.5px/1.3 var(--sans); color: var(--ink-2); white-space: nowrap; }
 .ghost-strip { height: 30px; border: 1px dashed var(--ink-3); display: flex; align-items: center; padding: 0 12px; gap: 12px;
   background: repeating-linear-gradient(135deg, transparent 0 9px, var(--rule-soft) 9px 10px); font: 400 12.5px var(--sans); color: var(--ink-2); }
 .ghost-strip > span:last-child { background: var(--paper); box-shadow: 0 0 0 4px var(--paper); }
