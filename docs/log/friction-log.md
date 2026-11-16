@@ -51,3 +51,5 @@ Mismatches between what the display needs and what the schema and files provide.
 **21. Stored texts mix two line-break conventions.** Found 2026-11-15 in the second site pass. South Dakota comparison texts are hard-wrapped (330 single line breaks inside paragraphs); base texts and all Missouri texts are not. The site now draws those breaks as spaces for display only. The schema does not say whether line breaks in witness text are meaningful, which will matter when span offsets are filled.
 
 **22. The "persistent" banner was not persistent.** It scrolled away with the masthead in the first prototype, and the first session's checks did not catch it. Fixed in the second pass.
+
+**23. The spec's two-channel commitment is not met, and nobody recorded that.** Found 2026-11-15 comparing spec v1 section 13.1 with the site (`docs/design/spec-vs-site.md`). The spec fixes magnitude as intensity and direction as hue. The site puts Layer 1 and Layer 3 in the same channel, fill color, one lens at a time, and DESIGN.md rules out an intensity scale. Needs an ADR either way.

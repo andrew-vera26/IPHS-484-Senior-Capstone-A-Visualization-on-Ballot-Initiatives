@@ -122,6 +122,18 @@ function draw() {
     h('h2', { id: 'cutoff' }, 'The cutoff'),
     h('p', {}, `The corpus covers alterations made through ${CUTOFF}. An initiative altered after that date is outside it.`),
 
+    h('h2', { id: 'pipeline' }, 'The pipeline'),
+    notCoded('No pipeline has run. Both files were coded by a model in conversation. Needed: the pipeline built eval-first (plan step 8), with each stage written to disk and described here.'),
+
+    h('h2', { id: 'selection' }, 'Selection criteria'),
+    notCoded('The corpus is not yet fixed. Needed: the window and adopt-and-amend decisions (plan step 3, S1 and S2) and the audited candidate list (plan step 5).'),
+
+    h('h2', { id: 'excluded' }, 'Excluded cases'),
+    notCoded('No case has been formally excluded. Needed: the step 5 audit, listing each candidate left out and the reason.'),
+
+    h('h2', { id: 'reliability' }, 'Reliability, layer by layer'),
+    notCoded('No hand-coded records exist to compare against. Needed: blind hand-coding (plan step 6), then agreement reported separately for each layer, never as one figure.'),
+
     h('h2', { id: 'limits' }, 'What the method does not capture'),
     h('ul', {},
       h('li', {}, 'Constitutional amendments, which a legislature cannot alter on its own.'),

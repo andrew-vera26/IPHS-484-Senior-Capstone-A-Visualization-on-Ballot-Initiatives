@@ -8,8 +8,12 @@ const NAV = [
   ['corpus.html', 'Corpus', 'corpus'],
   ['patterns.html', 'Patterns', 'patterns'],
   ['method.html', 'Method', 'method'],
+  ['data.html', 'Data', 'data'],
   ['about.html', 'About', 'about'],
 ];
+
+// The site is a dated snapshot, not a live tracker (spec v1, sections 7.1 and 13.2).
+export const SNAPSHOT = 'November 15, 2026';
 
 const store = {
   get(k) { try { return localStorage.getItem(k); } catch { return null; } },
@@ -48,6 +52,8 @@ export function mountChrome(active) {
     h('span.banner-text', {}, h('b', {}, 'Prototype.'), ' Model-coded, unaudited.'),
     h('a', { href: 'about.html#trust' }, 'What this means'));
 
+  const snapshot = h('p.snapshot', {}, `Snapshot: ${SNAPSHOT}. Prototype.`);
+
   const modeSwitch = h('div.seg.mode-seg', { role: 'group', 'aria-label': 'Reading mode' },
     ...[['facts', 'Facts only', 'Show only structural facts (Layers 1 and 2). Hides direction, mechanism and every judgment.'],
         ['interp', 'With interpretation', 'Also show the interpretive layers (3 and 4) and the model-written rationale.']]
@@ -82,7 +88,7 @@ export function mountChrome(active) {
       h('div.mast-tools', {}, modeSwitch, themeBtn)));
 
   const top = document.getElementById('chrome-top');
-  top.replaceChildren(h('a.skip', { href: '#main' }, 'Skip to content'), banner, mast);
+  top.replaceChildren(h('a.skip', { href: '#main' }, 'Skip to content'), banner, snapshot, mast);
   // The banner's height, for anything that has to sit directly under it (the pinned strip on the case page).
   const setBannerH = () => document.documentElement.style.setProperty('--banner-h', `${banner.offsetHeight}px`);
   setBannerH();

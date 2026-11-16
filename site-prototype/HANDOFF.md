@@ -64,3 +64,6 @@ Branch `site-prototype-v2` (the original is `site-prototype`). Never push. Never
 
 ## Next
 See `docs/design/DESIGN.md` section 12.
+
+## Spec check (2026-11-15, branch `site-prototype-v2`)
+Compared against spec v1 sections 7, 9 and 13 in `docs/design/spec-vs-site.md`. Added: a "Snapshot: November 15, 2026. Prototype." line under the banner on every page (`SNAPSHOT` in `js/chrome.js`); four "Not coded yet" Method sections (pipeline, selection criteria, excluded cases, per-layer reliability); a Data page (`data.html`, `js/data-page.js`) in the nav. No data or counts changed; `check_data.py` passes. **Not yet looked at in a browser.**

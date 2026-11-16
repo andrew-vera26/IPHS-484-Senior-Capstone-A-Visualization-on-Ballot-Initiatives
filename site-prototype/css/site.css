@@ -81,6 +81,9 @@ b, strong { font-weight: 650; }
 .banner b { font-weight: 800; }
 .banner a { color: inherit; font-weight: 500; letter-spacing: 0.06em; opacity: 0.85; }
 
+/* Dated snapshot line, directly under the banner on every page. Not sticky. */
+.snapshot { margin: 0; padding: 4px 20px; text-align: center; font: 500 12px/1.3 var(--sans); letter-spacing: 0.04em; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); }
+
 /* #chrome-top must not box the banner in, or it would stop sticking once the masthead scrolled away. */
 #chrome-top { display: contents; }
 
