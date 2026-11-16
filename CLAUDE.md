@@ -2,6 +2,10 @@
 
 Read `GLOSSARY.md` first. Read `docs/method/schema.md` before touching any record.
 
+## Direction
+
+`docs/workflow/plan.md` is the roadmap. Before any work, say which step it belongs to. Never skip, reorder or add steps without an ADR and a change-log line. The original spec in `spec/v1/` is frozen and never edited; differences are tracked in `docs/log/spec-drift.md`.
+
 ## Hard rules
 
 1. **Never write to `gold/`.** It holds hand-coded ground truth. Only the human writes there. Pipeline output goes to `out/`.
@@ -23,3 +27,4 @@ Read `GLOSSARY.md` first. Read `docs/method/schema.md` before touching any recor
 11. Agents receive the codebook and one case's text, never the whole corpus.
 12. Agents write results to files and return a short summary. Never paste raw records into the conversation.
 13. Every stage writes to disk, can be re-run alone, and caches API calls keyed on a hash of the input.
+14. **The website prototype is local only.** It lives in `site-prototype/`, is never deployed by the docs workflow, and every view labels its data "model-coded, unaudited".

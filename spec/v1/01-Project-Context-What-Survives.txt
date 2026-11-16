@@ -1,0 +1,912 @@
+What Survives
+Measuring Legislative Alteration of Voter-Approved Ballot Initiatives — Project Context and Design
+Andrew Vera · Kenyon College · IPHS 484 Senior Seminar
+Version 1.0 — September 2026
+
+
+
+0. How to read this document
+This document is the complete context for a research and software project. It is written to be read cold, by someone — or something —
+that has not been part of the conversation that produced it. It covers what ballot initiatives are, what problem this project addresses, why
+the project took the shape it did, what will be built, and how the output will be defended.
+
+A companion document, Prototype Specification, describes the first buildable increment. That document assumes this one has been read.
+
+
+
+
+1. Summary
+In twenty-one U.S. states, citizens can enact statutes directly by ballot initiative, bypassing the legislature entirely. In many of those
+states, the legislature can then amend or repeal what voters passed.
+
+Sometimes that amendment implements the measure. Sometimes it hollows it out. At present, both events are recorded identically — as
+“the legislature altered this initiative” — because no dataset measures how much of a voter-enacted law survives.
+
+This project builds that measurement, and publishes it as a browsable, citable resource. For each altered initiative, every provision
+voters enacted is tracked through the legislature’s amendments and coded for what happened to it, what kind of provision it was,
+whether the change expanded or narrowed the measure, and by what drafting mechanism.
+
+The one-sentence framing: existing methods measure whether the text changed; this measures whether the law still does what
+voters voted for.
+
+
+
+
+2. Background: what a ballot initiative is
+
+2.1 The basic mechanism
+A ballot initiative is a law drafted and proposed by citizens rather than by the legislature, then enacted by direct popular vote. It
+originated with Progressive Era reformers who believed state legislatures had been captured by railroad and corporate interests, and
+designed the initiative as a bypass.
+
+Twenty-one states permit initiated statutes. The process, in outline:
+
+1. Draft. Write the statutory text that will become law.
+2. File and review. Submit to the secretary of state or attorney general, who reviews for form and drafts the official ballot title and
+   summary voters will see.
+3. Gather signatures. Collect a threshold number of registered voters’ signatures, usually a percentage of the last gubernatorial vote,
+   often with geographic distribution requirements.
+4. Verify. Election officials validate signatures. Many campaigns fail here.
+5. Litigate. Opponents frequently sue pre-election over single-subject rules, ballot title wording, or signature validity.
+6. Vote. Simple majority in most states.
+
+
+2.2 Who actually files initiatives
+Legally, any citizen may. Practically, almost none do alone. Filers are typically coalitions — unions, advocacy organizations, industry
+groups, or a single wealthy backer. Missouri’s Proposition B (2010) was filed by a coalition including the Humane Society of the United
+States and the ASPCA. Drafting requires lawyers; qualification requires money and usually paid signature circulators.
+
+The “ordinary citizen” framing is part of the initiative’s founding mythology. Whether what voters enacted really belongs to the voters is
+a live question, and it cuts in both directions — a point this project should surface rather than assume.
+
+
+2.3 Direct versus indirect
+This distinction describes only the path to the ballot.
+
+   Direct initiative — sufficient signatures put the measure directly on the ballot. The legislature is not involved.
+   Indirect initiative — sufficient signatures send the measure to the legislature first. The legislature may enact it as written (in which
+   case there is no popular vote), or decline, in which case it proceeds to the ballot.
+Critical clarification: direct and indirect describe what happens before enactment. Post-enactment legislative alteration applies to
+both. A direct initiative is not immune. Missouri’s Proposition A was a direct initiative approved by voters, and the legislature repealed
+most of it anyway.
+
+The indirect route does create one distinctive maneuver. In Michigan in 2018, two indirect initiatives qualified — a minimum wage
+increase and a paid sick leave requirement. The legislature adopted both before the election, which removed them from the ballot, then
+amended both in the December lame-duck session. Michigan requires a three-quarters supermajority to amend a law voters approved at
+the polls; because these never reached the polls, a simple majority sufficed. The Michigan Supreme Court ruled against the maneuver in
+2024. This “adopt and amend” pattern is coded as its own flag in the schema.
+
+
+2.4 Statute versus constitutional amendment
+    Initiated statute — creates or changes ordinary law. The legislature can later amend or repeal it, subject to state rules.
+    Initiated constitutional amendment — changes the state constitution. The legislature cannot unilaterally alter it; only voters can.
+
+There is no mechanism for citizens to amend the U.S. Constitution by initiative. “Constitutional amendment” in this context always
+means a state constitution.
+
+State constitutions are far easier to amend than the federal one and correspondingly longer, containing detailed policy provisions — tax
+rates, gambling rules, program funding — that would never appear federally. This is exactly what makes the constitutional route
+attractive to campaigns: not that the policy is constitutional in character, but that constitutional text is beyond legislative reach.
+
+Scope consequence: this project covers initiated statutes only, because those are the measures capable of being legislatively altered.
+This excludes several of the most frequently cited examples in this area, including Florida’s Amendment 4 (felon re-enfranchisement) and
+Florida’s medical marijuana measure, both of which are constitutional amendments. The exclusion is stated explicitly on the project’s
+Method page.
+
+
+2.5 The three rule regimes
+States differ in how much protection a voter-enacted statute receives. This variation is the project’s central doctrinal variable.
+
+ Regime                                          Description                                          Examples
+
+ Unrestricted                                    Legislature may amend or repeal by simple            Eleven states, including Missouri and South
+                                                 majority, immediately                                Dakota
+
+ Restricted                                      Time limits, supermajority requirements, or both     Eight states
+
+ Purpose-fidelity                                Amendment permitted only where it furthers the       Arizona, California
+                                                 measure’s purpose; Arizona additionally requires a
+                                                 three-quarters supermajority
+
+
+Arizona’s standard is the sharpest: amendment must further the purpose of the measure. Courts currently apply this test by judgment
+rather than measurement. Operationalizing it is one of this project’s stated contributions.
+
+
+
+
+3. The phenomenon
+
+3.1 Scale
+Among initiated statutes approved from 2010 through 2018, 28 of 99 were repealed or amended as of April 2019. Across 2010–2024,
+Ballotpedia counts roughly 30 of about 150 initiated statutes altered, with key provisions repealed in five. Marijuana was the most-
+altered topic, followed by elections. Maine altered four of eight approved measures; Colorado and Oregon three of five each.
+
+
+3.2 Four worked examples
+Missouri Proposition A (2024) — severe, fast, selective. Approved by nearly 58% of voters in November 2024. It raised the
+minimum wage to $15, indexed future adjustments to the Consumer Price Index beginning 2027, and required most private employers to
+provide earned paid sick time at one hour per thirty worked. The sick leave requirement took effect May 1, 2025. On July 10, 2025, HB
+567 was signed, repealing the paid sick time provisions entirely effective August 28 — roughly four months after they began — and
+repealing the inflation indexing. The $15 wage survived.
+
+The pattern this illustrates: the legislature kept the visible headline number and removed both an entire entitlement and the escalation
+mechanism that would have mattered most over twenty years.
+
+Missouri Proposition B (2010) — partial. Approved 51.6%. Required large-scale dog breeders to provide adequate food, water,
+housing, space, veterinary care, exercise, and rest between breeding cycles; capped breeders at fifty breeding dogs; created a
+misdemeanor offense. Repeal legislation was filed within a month. SB 113, passed April 2011 (Senate 20–14, House 85–71), eliminated
+the fifty-dog cap, the breeding frequency limit, and the cage-height requirement. The general care standards and the criminal penalty
+survived.
+
+Why paired with Proposition A: same state, same unrestricted regime, fourteen years apart, different topics, and two different survival
+profiles. If both are simply coded “altered,” that difference is invisible.
+South Dakota Initiated Measure 22 (2016) — total, immediate, referendum-proof. A campaign finance, lobbying, and ethics
+package creating a publicly funded campaign finance program and a state ethics commission. Approved November 2016. HB 1069 was
+introduced January 20, 2017 and signed February 2, 2017 — roughly two months after passage. Because the bill carried an emergency
+clause, citizens were barred from mounting a veto referendum to overturn the repeal.
+
+Utah Proposition 4 (2018) — slow, litigated, reversed. An anti-gerrymandering measure. SB 200 (2020) rescinded its core reforms.
+In 2024 the Utah Supreme Court held that the legislature had overstepped, grounding the limit in the state constitutional right to alter
+or reform government. The legislature responded within weeks by placing a counter-amendment on the ballot.
+
+
+3.3 The escalation cycle
+Alteration provokes response. After HB 567 repealed Proposition A’s sick leave provisions, Missouri advocates began pursuing the same
+policy as a constitutional amendment — the same substantive goal in a vehicle beyond legislative reach. Arizona’s purpose-fidelity rule
+was itself enacted by citizen initiative.
+
+This suggests a second-order consequence worth measuring: legislative alteration may be pushing ordinary policy into state
+constitutions, where it is hard to fix when badly drafted. The schema records prior and subsequent similar measures so this cycle is
+traceable.
+
+
+
+
+4. How the project arrived here
+The project passed through four abandoned directions. This history is recorded because the reasons for abandonment constitute the
+design criteria that the current project must satisfy.
+
+Model-bill diffusion in state AI legislation. Text-reuse analysis of the state AI legislative wave. Abandoned after a January 2026
+ACLU/Brown report covered adjacent ground, and after a decision to move away from AI policy as subject matter.
+
+Ballot title fidelity. Measuring the gap between official ballot summaries and the statutes they describe. Methodologically sound and
+genuinely novel — existing work measures readability, not accuracy — but tabled. The provision-decomposition machinery developed for
+it carried forward.
+
+Post-Grants Pass municipal ordinance drafting. Testing whether camping ordinances enacted after the 2024 Supreme Court
+decision matched the premises the Court asserted. The faculty advisor objected on two grounds: a null result (ordinances remain facially
+neutral) was predictable in advance, because cities had been drafting neutral ordinances for decades and the decision gave them no new
+reason to stop; and text is a weak proxy for what happens to people. Both objections were correct.
+
+Doctrinal migration after Grants Pass. Mapping where litigation went once the Eighth Amendment route closed. Better, but pivoted
+away from.
+
+Design criteria that survived this history:
+
+1. The finding must not be predictable from the armchair. A hypothesis with no mechanism produces an uninformative null.
+2. Any null result must still be a finding.
+3. Textual analysis must connect to consequences, not stop at text.
+4. Novelty claims must be checked against existing literature before commitment, and stated narrowly.
+
+The shift to a visualization tool. After the measurement project was presented, the faculty advisor redirected toward a browsable
+resource rather than a paper — a tool scholars could use, structured around five analytical frames: what exactly changed, where changes
+concentrate, whether an amendment expands or narrows, how quickly changes occurred, and how the change was described. The
+current design is that tool.
+
+
+
+
+5. Existing research, and the gap
+
+5.1 What exists
+Political science. The canonical work is Gerber, Lupia, McCubbins and Kiewiet, Stealing the Initiative, which found California
+legislators displacing initiative content and subverting implementation of voter-ratified measures. A later study of Maine used elite
+interviews to push back, finding legislators there reluctant to meddle and inclined to fix flawed measures while preserving voter intent.
+These two literatures disagree, and the disagreement is unresolved.
+
+Tracking. Ballotpedia maintains counts of which initiatives were altered and catalogues each state’s rules. Advocacy organizations track
+the phenomenon episodically.
+
+Method. Comparative politics has tools for tracking amendments to legislative text — minimum-edit-distance algorithms, and an
+established literature measuring amendment success in EU legislation. These have never been applied to U.S. initiative alteration.
+
+
+5.2 What does not exist
+Any provision-level measurement of how much of a voter-enacted law survives. Existing counts are binary: altered or not. They cannot
+distinguish a legislature implementing a measure from one hollowing it out. Ballotpedia acknowledges that alterations vary in how they
+affect provisions and leaves the variation uncharacterized.
+
+
+5.3 Why the gap exists, and the novelty claim
+The gap is not an oversight. Measuring survival requires semantic judgment about legal effect, which was not tractable at scale until
+recently.
+
+Textual change and legal change come apart in both directions:
+
+    A legislature can rewrite a provision entirely in new language and preserve its effect exactly. Edit distance scores this as a massive
+    change. It is not.
+    A legislature can leave a provision’s text untouched and add a nine-word exemption three sections away that guts it. Edit distance
+    scores this as trivial. It is not.
+
+The novelty claim, stated narrowly: established phenomenon, established method family, measurement nobody has taken. This is an
+application novelty, not a contribution to natural language processing. It should be claimed as such and no further — overclaiming a
+“novel AI technique” invites the question which one?, which has no good answer.
+
+
+5.4 One additional finding the method may produce
+Trackers observe whether a bill amended the initiative’s own statutory sections. That unit of observation is blind to at least four things:
+collateral amendment of related statutes, definitional change elsewhere in the code, defunding through appropriations, and
+recodification breaking the trail. The project’s exemption-sweep step is designed to catch the first two. Documented instances of
+alteration that standard trackers missed would constitute a finding in their own right.
+
+
+
+
+6. Research questions
+Primary. What fraction of the provisions voters enacted survive legislative alteration intact, and what fraction are weakened or deleted?
+
+Secondary. Does survival vary systematically by provision type? The working hypothesis is that legislatures preserve visible obligations
+and strip the machinery — funding, indexing, enforcement, sunset.
+
+Tertiary — doctrinal. Do state rule regimes affect survival? If rates do not differ between unrestricted states and purpose-fidelity
+states, those constitutional protections are ceremonial.
+
+Mechanism. By what drafting moves is hollowing-out accomplished? A typology of these moves is transferable well beyond ballot
+initiatives.
+
+Description. How are consequential amendments characterized by the legislatures that pass them?
+
+
+
+
+7. Methodological precedent: the Frankenstein Variorum
+The project’s structure is adapted from the Frankenstein Variorum Edition, a digital humanities project comparing five witnesses of Mary
+Shelley’s novel — the manuscript, the 1818 edition, the Thomas copy, 1823, and 1831.
+
+
+7.1 What transfers
+The witness model. The Variorum treats each edition as a witness to one work. Here, the voter-enacted text, each amending bill, and
+the current statute are witnesses to one law. This scales naturally to measures altered more than once.
+
+The collation spine. Rather than tracking section numbers across versions, the Variorum maps every witness onto a version-
+independent backbone, with each variation point carrying a stable ID. This is adopted directly, and it is the project’s answer to the
+renumbering problem.
+
+Heatmap as navigation. The Variorum’s landing page is an interactive heatmap — columns are witnesses, rows are locations in the
+text, color is intensity of variation — explicitly designed to draw the reader in at moments of heavy alteration. This resolves the “what do
+we highlight” problem: magnitude is rendered across the whole corpus and the eye finds the hot spots.
+
+Method and Data as first-class pages. The Variorum publishes its pipeline and underlying data as navigational sections, not buried
+appendices. This is the difference between a resource and a demonstration.
+
+Dated snapshot. The Variorum’s generated pages state when they were produced. This project adopts the same convention (see §12.2).
+
+
+7.2 What does not transfer, and what this project adds
+The Variorum encodes magnitude only. Its heatmap indicates that a passage changed substantially; it does not indicate direction,
+because for literary variants direction is not well-defined.
+
+Legal variants have direction. A deletion narrows; an added exemption narrows; a raised threshold could go either way. This project’s
+visualization therefore requires a second visual channel — intensity for magnitude, hue for direction.
+This is the project’s contribution relative to its model, and it is a strong position to present from: here is the established digital-
+humanities method; here is the dimension legal text requires that literary text does not.
+
+A second divergence: the Variorum compares five witnesses of one work. This project compares roughly fifteen different laws with two or
+three witnesses each, which requires a cross-case dimension the Variorum has no counterpart for.
+
+A third: automated collation tools assume closely related texts. Statutory amendment restructures more aggressively than a novelist
+revising, which is why the alignment step requires semantic matching rather than an off-the-shelf collation engine.
+
+
+
+
+8. The spine data model
+
+8.1 Definition
+The spine is a data model, not a visualization. It stores the correspondence between versions by giving each provision an identity that
+persists regardless of renumbering, relocation, or rewording.
+
+
+8.2 Rules
+The base witness is the voter-enacted text. Spine IDs are assigned there and never change.
+
+Legislature-added provisions receive IDs, flagged as having no initiative counterpart. This distinction matters: added provisions
+are frequently where exemptions live.
+
+IDs are human-legible. Format: MO-2024-PropA-p017 — jurisdiction, year, measure, provision number. These will be read constantly
+during hand-verification, and opaque hashes make that miserable.
+
+Restructuring is one-to-many by design. When one provision splits into three, all three map to the same spine ID. The relationship
+lives in the mapping, not in a label. This is why the schema has a single restructured tag rather than separate split and merged tags.
+
+
+8.3 What depends on the spine
+   Renumbering handling. Renumbering becomes a property visible in the data rather than a tag to maintain.
+   Cross-case comparison. Claims like “funding provisions were stripped in nine of fifteen cases” require comparable provision
+   identity across states.
+   Citability. A stable ID lets a researcher cite a specific change in a footnote and have it resolve years later. Without it, every
+   reference is “the third paragraph of the amended section, as of the 2026 snapshot.”
+
+
+8.4 Record template
+The following shows the shape of a provision record. Every value is a placeholder or a format specification. No content below
+describes any real statute. A worked example drawn from actual coded output belongs in a later version of this document.
+
+Three scope levels exist. Provision-level fields vary per spine ID. Bill-level fields are identical across every provision touched by the same
+amending instrument. Measure-level fields are identical across every provision in the initiative.
+
+   {
+       "spine_id": "<ST>-<YYYY>-<MeasureSlug>-p<NNN>",
+       "measure_id": "<ST>-<YYYY>-<MeasureSlug>",
+
+       "base_witness": {
+         "text": "<verbatim provision text as enacted by voters>",
+         "citation": "<section number as enacted>",
+         "span": [<start_char>, <end_char>]
+       },
+
+       "comparison_witness": {
+         "witness_id": "<ST>-<YYYY>-<BillNumber>",
+         "text": "<verbatim counterpart text, or null if none>",
+         "citation": "<current section number, or null>",
+         "span": [<start_char>, <end_char>]
+       },
+
+       "layer_1_structural_operation": "<one of: unchanged | relocated | rewritten |
+           partially_deleted | deleted_entirely | added | restructured | replaced |
+           suspended | repealed_and_reenacted | cross_reference_altered |
+           relied_on_term_redefined_elsewhere>",
+
+       "layer_2_provision_type": "<one of the seventeen Layer 2 values>",
+
+       "layer_3_directional_effect": "<one of: expands | narrows | delays | clarifies |
+           restructures_no_effect_change | administratively_implements |
+           indeterminate_or_contested>",
+       "layer_3_rationale": "<one sentence stating what drove the judgment>",
+       "layer_3_driving_span": [<start_char>, <end_char>],
+
+       "layer_4_mechanism": "<one of the eighteen Layer 4 values, or null>",
+       "layer_4_applies": "<true only where layer_3 is narrows or delays>",
+      "exemption_sweep": {
+        "ran": <true|false>,
+        "limiting_language_found": <true|false>,
+        "limiting_source_citation": "<section where limiting language sits, or null>",
+        "limiting_span": [<start_char>, <end_char>],
+        "reclassified_from": "<prior layer_3 value, or null>"
+      },
+
+      "layer_5_description": {
+        "scope": "bill-level",
+        "stated_rationale": "<one of the ten Layer 5 rationale values>",
+        "rationale_source": "<one of: bill_title | official_summary | fiscal_note |
+            sponsor_statement | governors_message>",
+        "description_effect_gap": <true|false>
+      },
+
+      "layer_6_temporal_procedural": {
+        "scope": "bill-level",
+        "days_enactment_to_introduction": <integer>,
+        "days_enactment_to_alteration_effective": <integer>,
+        "altered_before_provision_took_effect": <true|false>,
+        "sessions_elapsed": <integer>,
+        "alteration_sequence_number": <integer>,
+        "standalone_or_omnibus": "<standalone|omnibus>",
+        "session_type": "<regular|special|lame_duck>",
+        "passage_margin_upper": "<yes>-<no>",
+        "passage_margin_lower": "<yes>-<no>",
+        "supermajority_required": <true|false>,
+        "supermajority_met": "<true|false|null>",
+        "party_control_vs_initiative_direction": "<aligned|opposed|mixed>",
+        "executive_action": "<signed|vetoed_overridden|unsigned>",
+        "emergency_clause": <true|false>,
+        "adopt_and_amend": <true|false>,
+        "committee_of_origin": "<name | NO_COMMITTEE | NOT_RETRIEVABLE>"
+      },
+
+      "layer_7_measure_context": {
+        "scope": "measure-level",
+        "initiative_route": "<direct|indirect>",
+        "vehicle": "<statute|constitutional>",
+        "vote_margin": "<yes_pct>-<no_pct>",
+        "campaign_funding_profile": "<grassroots|industry|single_donor|mixed>",
+        "topic": "<topic label>",
+        "state_rule_regime": "<unrestricted|restricted|purpose_fidelity>",
+        "prior_similar_measure_year": "<YYYY|null>",
+        "subsequent_similar_measure_year": "<YYYY|null>"
+      },
+
+      "layer_8_subsequent_fate": {
+        "scope": "measure-level",
+        "litigated": <true|false>,
+        "litigation_outcome": "<text|null>",
+        "struck_down": "<none|partial|whole>",
+        "re_initiated_by_campaign": <true|false>,
+        "constitutional_amendment_pursued_after": <true|false>,
+        "altered_again_later_session": <true|false>,
+        "referendum_filed_against_alteration": <true|false>,
+        "provision_reenacted_substantially_same": <true|false>
+      },
+
+      "layer_9_coding_metadata": {
+        "coded_by": "<model|hand|both>",
+        "model_self_consistency": "<n_agreeing>/<n_runs>",
+        "human_model_agreement": "<agree|disagree|not_hand_coded>",
+        "flagged_for_review": <true|false>,
+        "adjudicated": <true|false>,
+        "confidence": "<high|medium|low>"
+      }
+  }
+
+
+Notes on the template.
+
+spine_id uses the two-letter state postal code, the year voters approved the measure, a short measure slug, and a zero-padded three-
+digit provision number — for example the seventeenth provision of a 2024 Missouri measure called Proposition A. The number is
+assigned in reading order on the base witness and never reassigned.
+
+comparison_witness.text is null where the aligner returned none . Distinguishing a genuine absence from a retrieval failure is an open
+question (§9 of the prototype specification) and will require an additional field once resolved.
+
+One bill section may touch several spine IDs, and one spine ID may map to several sections after restructuring. The relationship is many-
+to-many and lives in the witness mapping, not in these records.
+
+Bill-level and measure-level blocks are denormalized into each provision record for readability during hand-verification. A production
+store would normalize them; at this scale, the duplication costs nothing and makes a single record legible on its own.
+9. The tagging schema
+
+9.1 The layering principle
+The schema separates what the text objectively did from what the change means. A tool that fuses these can be dismissed as
+editorializing.
+
+Layers 1, 2, 6, 7, 8 and 9 are near-objective. Layers 3 and 4 are interpretive. Layer 5 is mixed. Reliability is reported separately per layer,
+so a skeptical reader can accept the structural coding while disputing the interpretive coding.
+
+This separation is also what makes the tool usable by someone who disagrees with the project’s conclusions.
+
+
+9.2 Layer 1 — Structural operation
+Provision-level. What the text objectively did.
+
+unchanged · relocated · rewritten · partially deleted · deleted entirely · added · restructured (split or merged) · replaced ·
+suspended · repealed and reenacted · cross-reference altered · text unchanged but a relied-on term redefined elsewhere
+
+Notes: repealed and reenacted is retained because it is a drafting device capable of laundering substantive change. The final value is
+objectively verifiable but only detectable through the whole-statute sweep described in §10.4.
+
+Deliberately excluded: reworded without substantive change (a Layer 3 judgment misfiled in an objective layer — code rewritten here
+and clarifies in Layer 3) and renumbered only (made redundant by the spine).
+
+
+9.3 Layer 2 — Provision type
+Provision-level.
+
+ scope/coverage (includes eligibility) · core obligation or entitlement · rate, amount, or threshold · escalation, indexing, or adjustment
+· funding source · appropriation amount · enforcement authority · penalty or remedy · private right of action · administrative
+procedure (includes notice, recordkeeping, appeals and review) · rulemaking authority and agency discretion · reporting and data
+collection · exemption or carve-out · definitions · effective date · sunset or expiration · conflict or preemption clause
+
+Two departures from the obvious list, both load-bearing:
+
+Escalation is separate from core obligation. Missouri Proposition A is the argument: the $15 wage survived and the CPI indexing did
+not. Folded together, the finding disappears.
+
+Definitions are their own type. Redefining “employer” or “covered entity” can hollow out a statute without touching a single
+obligation. It is the quietest mechanism available.
+
+Deliberately excluded: findings and purpose statements (non-operative; used as input to purpose extraction, not tracked for survival) and
+severability (boilerplate, near-universal, rarely altered meaningfully).
+
+
+9.4 Layer 3 — Directional effect
+Provision-level. Interpretive.
+
+expands · narrows · delays · clarifies · restructures (no effect change) · administratively implements · indeterminate or contested
+
+Explicit methodological commitment, to be stated on the Method page: direction is measured relative to the initiative’s own
+stated purpose, not against any external baseline. This is contestable; stating it openly is what makes it defensible.
+
+indeterminate or contested is the honesty valve. A direction scheme with no escape hatch forces false precision, and the rate at which
+the valve is used is itself reportable.
+
+
+9.5 Layer 4 — Mechanism
+Provision-level. Applied only to provisions coded narrows or delays .
+
+ outright repeal · definitional narrowing · exemption insertion · threshold adjustment · coverage carve-out · enforcement weakening
+(removal or penalty reduction) · private right of action removal · discretion transfer (shall → may) · delegation without standards ·
+effective-date delay · funding removal or redirection · sunset insertion · preemption of local implementation · procedural burden
+insertion · burden of proof shift · reporting removal · conditioning on an external event · referendum-proof clause attachment
+
+This layer is the project’s substantive contribution. A typology of how legislatures hollow out laws transfers well beyond ballot initiatives.
+
+Two values deserve particular attention. enforcement weakening and discretion transfer both preserve the duty while removing what
+makes it a duty, and both are invisible to any method measuring textual change.
+
+This layer is kept deliberately generous. An unobserved mechanism is a cheap empty column; an unanticipated mechanism is a coding
+crisis mid-project.
+
+
+9.6 Layer 5 — Description and justification
+Bill-level.
+Stated rationale: technical correction · clarification · implementation · conflict resolution · fiscal concern · unintended
+consequence · constitutional concern · compliance burden · federal conformity · none stated
+
+Source of description: bill title · official summary · fiscal note · sponsor statement · governor's message
+
+Floor statements and committee reports are excluded — retrieval cost is disproportionate and preservation is inconsistent across states.
+
+Derived: description–effect gap (binary flag), set where the stated rationale is procedural and the measured effect is substantive.
+
+This flag is the project’s headline generator. A bill described as a technical correction that deletes an enforcement provision is not a
+percentage — it is a specific, citable instance. The gap is recorded as a binary rather than a magnitude score, because a magnitude
+layered on two interpretive judgments compounds error in a way that is hard to defend.
+
+
+9.7 Layer 6 — Temporal and procedural
+Bill-level. Objective.
+
+Temporal: days from voter enactment to bill introduction · days from voter enactment to alteration effective · altered before or after the
+provision took effect · legislative sessions elapsed · alteration sequence number
+
+Procedural: standalone or omnibus · session type (regular, special, lame-duck) · passage margin per chamber · supermajority required
+and whether met · party control relative to initiative direction · signed, vetoed and overridden, or unsigned · emergency clause · adopt-
+and-amend maneuver · committee of origin
+
+The before/after-effect field matters: repealing something that has been operating for four months is a different political act than
+repealing it before anyone felt it.
+
+Known data issue: committee of origin availability varies sharply by state, and some legislatures do not record it machine-readably.
+Blanks must distinguish “no committee” from “not retrievable.”
+
+
+9.8 Layer 7 — Measure context
+Measure-level.
+
+ initiative route (direct/indirect) · vehicle (statute/constitutional) · vote margin · campaign funding profile · topic · state rule regime
+· prior_similar_measure_year · subsequent_similar_measure_year
+
+On the similar-measure fields: no time threshold is applied. The year of the nearest prior and subsequent similar measure is stored,
+not a yes/no verdict within a window. This costs nothing extra at coding time and makes the window a query parameter rather than a
+baked-in assumption, so a later user can ask five years, ten, or ever. The same principle governs the exclusion of election context ,
+which is derivable from the year.
+
+The search stopping rule is fixed: same policy domain, same state, state ballot measure history only.
+
+
+9.9 Layer 8 — Subsequent fate
+Measure-level. This is the layer that makes the resource continuing rather than static.
+
+litigated and outcome · struck down in whole or part · re-initiated by campaign · constitutional amendment pursued afterward · altered
+again in a later session · referendum filed to overturn the alteration · provision re-enacted in substantially the same form later
+
+
+9.10 Layer 9 — Coding metadata
+Not findings. Infrastructure — but a scholarly tool is not credible without it.
+
+witness ID · source span offsets · coded by (model/hand/both) · model self-consistency across runs · human–model agreement · flagged
+for review · adjudicated · confidence
+
+
+9.11 What the schema deliberately omits
+There is no severity or “gutted” field. That is the reader’s inference from Layers 1 through 4. Building it in converts the tool into an
+argument the reader cannot audit.
+
+
+
+
+10. Technical methodology
+
+10.1 The claim about what this measures
+Comparative politics measures textual change with minimum-edit-distance methods. This project measures whether the legal obligation
+survived, which requires semantic judgment. That is the entire technical argument, and it should be stated in one sentence rather than
+dressed up.
+
+
+10.2 Embeddings
+Anthropic does not serve an embeddings endpoint. Voyage AI publishes a legal-domain embedding model (the voyage-law- line; current
+version to be checked at implementation time) trained on case law and statutory text. Generic embedding models handle legal prose
+poorly because the domain vocabulary is dense with defined terms and cross-references.
+
+Fallback: sentence-transformers with a BGE or MPNet model, run locally. Slower and less accurate on legal text, but free and
+dependency-light.
+
+No vector database. At a few thousand provisions, embeddings live in a NumPy array and similarity is a matrix multiplication. Pinecone
+or Chroma would be overhead with no benefit.
+
+
+10.3 Hybrid retrieval
+Dense retrieval alone fails on legal text in a specific way: statutes carry distinctive lexical signals — defined terms, section numbers,
+dollar amounts, cross-references — that embeddings smooth out. “Fifty breeding dogs” and “seventy breeding dogs” are near-identical in
+embedding space, and that difference is precisely what the project exists to catch.
+
+Two retrievers, fused:
+
+   Dense. Embed each voter-enacted provision; retrieve top candidates from the amended statute by cosine similarity.
+   Sparse. BM25 over the same corpus ( rank_bm25 ). Catches exact term and numeric matches.
+   Fusion. Reciprocal rank fusion. A dozen lines of code, meaningfully better than either alone.
+
+Output: five candidate counterparts per provision, passed to the classifier. Nothing is decided by similarity score.
+
+
+10.4 Classification: three distinct calls
+All use structured output schemas, returning validated JSON rather than parsed prose.
+
+Call 1 — Alignment adjudication. Input: one original provision and its five candidates. Output: which candidate is the counterpart, or
+none . The none branch is essential — forced matching is the primary failure mode, and provisions returning none become candidate
+deletions for hand verification.
+
+Call 2 — Effect classification. Input: the matched pair. Output: Layer 1 and Layer 3 values, plus a one-sentence rationale and the
+specific span that drove the judgment. The rationale is not decoration; it is what gets read when auditing disagreements.
+
+Call 3 — The exemption sweep. For each provision classified intact , a second retrieval pass over the entire amended statute searches
+for limiting language — exemptions, carve-outs, thresholds, effective-date restrictions — and the model judges whether any of it
+constrains the provision. Any provision failing this check is reclassified as narrows , with the Layer 4 mechanism recorded.
+
+This step is the one nobody else does, and it is the project’s most defensible technical claim. Without it, Missouri Proposition A’s
+minimum wage provision would score as fully intact, missing that the indexing mechanism was stripped.
+
+
+10.5 Reliability machinery
+   Self-consistency. Calls 2 and 3 run five times at low temperature; majority wins. The disagreement rate is a measured property of
+   the instrument and is reported, not hidden.
+   Cross-model check. Classification is re-run on a subsample with a second model family. Convergence is stronger evidence than one
+   model’s output; divergence marks the hard cases for hand review.
+   Position-bias control. Candidate order is randomized in Call 1. Language model judges favor earlier options.
+   Contamination control. Measure names, numbers, and years are stripped before classification, so the model reasons from the text
+   in front of it rather than from what it knows about Proposition A.
+
+
+10.6 Pipeline hygiene
+Every API call is cached, keyed on a hash of its input, stored as JSON on disk. The pipeline will be re-run many times as the codebook
+evolves; without caching, each run re-pays and re-waits. Caching also makes the work reproducible for the archived version.
+
+One record per provision: original text, span offsets, matched counterpart, all layer values, rationale, exemption-sweep result, and
+agreement across runs. That table is the dataset.
+
+
+10.7 Environment
+Python, built through Claude Code. Session orchestration via Herdr, which allows long extraction runs to detach and survive a closed
+laptop — orchestration, not compute.
+
+
+
+
+11. Corpus and case selection
+
+11.1 The tiered structure
+The pipeline is run on all known altered initiatives (currently ~30 from Ballotpedia’s 2010–2024 window, extensible earlier and later).
+Of these, fifteen are published as fully hand-verified case pages; the remainder are published as machine-coded and clearly marked
+pending review.
+This structure does three things at once. Aggregate patterns draw on the full set. Deep inspection draws on the verified fifteen. And the
+verified/pending distinction makes the project continuable — the obvious next contribution is verifying more cases, which is the long-
+term plan.
+
+
+11.2 Why fifteen, and not thirty
+A browsable tool rewards depth per case: every provision visible, every claim traceable to source text, enough hand-verification to
+defend any individual cell. A wrong cell is visible on a case page in a way it is not in an aggregate table. Fifteen deeply verified cases is
+more defensible than thirty shallow ones.
+
+The number is provisional. The correct procedure is to hand-code one case, time it honestly, and multiply.
+
+
+11.3 Selection design
+The fifteen are selected as a diverse-case design — chosen to maximize variance on theoretically relevant dimensions, not to mirror a
+population. Six dimensions, in rough order of importance:
+
+1. Rule regime — unrestricted, restricted, purpose-fidelity. Must be covered.
+2. Severity — total repeal, partial hollowing, technical correction, implementation. The full range, deliberately.
+3. Topic — marijuana and elections (the two most-altered categories), plus labor, health, and at least one outlier.
+4. Speed — South Dakota repealed in two months; Utah took two years.
+5. Route — direct and indirect. Adopt-and-amend exists only on the indirect track.
+6. Outcome — litigated and not.
+
+Cases that cut against the hypothesis are mandatory. If all fifteen show hollowing-out, the site is an indictment wearing a tool’s
+clothing. Genuine technical-correction cases, implementation cases where alteration furthered the purpose, and unaltered initiatives as
+controls must be included.
+
+
+11.4 Candidate cases
+Confirmed anchors:
+
+ Case                                Year                               Topic                               Profile
+
+ South Dakota IM 22                  2016                               Campaign finance/ethics             Total repeal, ~2 months, emergency
+                                                                                                            clause blocked referendum
+
+ Missouri Proposition A              2024                               Labor                               Partial hollowing, 8 months,
+                                                                                                            escalation cycle follows
+
+ Missouri Proposition B              2010                               Animal welfare                      Partial, numeric caps stripped,
+                                                                                                            framework survived
+
+ Michigan minimum wage               2018                               Labor                               Indirect, adopt-and-amend, struck
+                                                                                                            down 2024
+
+ Michigan paid sick leave            2018                               Labor                               Same maneuver, second measure
+
+ Utah Proposition 4                  2018                               Redistricting                       Slow, litigated, struck down 2024
+
+ Maine income surcharge              2016                               Tax                                 Repealed
+
+ Maine minimum wage                  2016                               Labor                               Partial repeal as to tipped workers
+
+
+Remaining slots to be filled from Colorado and Oregon (each altered three of five approved measures, 2010–2018), at least one
+marijuana implementation case, at least one Arizona case to exercise the purpose-fidelity regime — possibly an attempted alteration that
+failed, which is itself a useful case type — and two unaltered controls, ideally from Maine’s 2016 slate where two of four measures were
+left alone.
+
+
+11.5 The selection-bias defense
+Three structural commitments, all of which must actually be honored:
+
+1. The pipeline runs on all known cases, not only the published fifteen.
+2. Selection criteria are published on the Method page before coding begins.
+3. Excluded cases are listed with reasons.
+
+The prepared answer to the objection:
+
+     “These aren’t a sample — they’re selected to span the range. Every case in the corpus is machine-coded; fifteen are hand-verified
+     and marked as such. The criteria are published, the excluded cases are listed, and the method is reproducible on any case you think
+     I’ve missed.”
+
+This sentence only holds if the three commitments above are true. If any slips, it becomes a claim that cannot be backed, which is worse
+than not having it.
+11.6 Case list verification
+Ballotpedia’s count is a starting point, not the corpus. The first corpus task is verifying the case list against primary sources — checking
+each measure’s statutory sections directly rather than trusting the amended/not-amended label. Some tracked alterations will prove
+genuinely trivial on reading. Some untracked alterations may surface. The working number will shift, and both directions of shift are
+reportable.
+
+
+
+
+12. Validation
+
+12.1 Per-layer reliability
+Agreement is reported separately by layer, not in aggregate. Expected ceilings differ: Layer 1 near-perfect, Layer 2 high, Layers 3 and
+4 moderate. An aggregate figure hides exactly the variation a reader needs.
+
+Publishing a lower figure for the interpretive layers is not a weakness. It is the honest statement that direction coding is a judgment, and
+it is what earns the right to publish the judgment at all.
+
+
+12.2 The four checks
+Independent hand-coding. A substantial sample coded by hand, blind to model output, with agreement reported. Ideally a second
+human codes a subset, establishing the human-to-human ceiling — a model cannot meaningfully exceed the reliability of the task itself,
+and knowing that ceiling tells you whether moderate agreement is mediocre or excellent.
+
+Negative controls. Feed the aligner an unrelated statute; confirm it reports non-matches rather than forcing a pairing. This is a five-
+minute test that catches the catastrophic failure mode.
+
+Synthetic perturbation. Programmatically delete a provision known to survive; confirm the pipeline flags it as absent. Repeated across
+provision types, this generates a large labeled test set without hand-coding any of it, and yields a detection rate broken out by provision
+type. This is more methodologically serious than swapping in a larger model.
+
+Unmatched-provision rate. Reported openly, since that is where errors concentrate.
+
+
+
+
+13. The deliverable
+
+13.1 Structure
+A static site. Pipeline outputs JSON; a single page renders it. No backend. This matters for three reasons: it is publishable on Kenyon’s
+digital archive, it is archivable, and it cannot rot the way a database-backed application does.
+
+Case view — provision by provision, voter-enacted text beside current statute, coded by operation and direction, with the source span
+for every claim, and the legislature’s own description of each change placed adjacent to its measured effect.
+
+Cross-case views — a provision-type heatmap (types by cases, color by survival), a timeline (days from enactment to alteration), and a
+description-gap view.
+
+Method page — the pipeline, the codebook, the selection criteria, the excluded cases, per-layer reliability figures.
+
+Data page — the full dataset, downloadable.
+
+Detailed visual design is deferred and is not covered by this document. Two commitments are fixed: the design must let the eye find the
+hot spots, and magnitude and direction must occupy separate visual channels.
+
+
+13.2 Dated snapshot, not a living tracker
+The site carries an explicit vintage. The repository contains the code that generated it. Documentation explains how to add a case.
+
+This is deliberate. Undergraduate capstones reliably stop being updated the week after submission, and a dashboard claiming currency it
+does not have is worse than an honest snapshot. A dated, reproducible snapshot is also more defensible in an interview than a “live
+tracker” frozen at 2026.
+
+
+13.3 The opening claim
+The site must open with a claim, not a search box. A browsable interface with no thesis is a data visualization exercise, and the faculty
+advisor has already pushed back once on whether this project would yield anything.
+
+The claim is provisional until the data supports one. The schema was designed so that four candidate claims are available:
+
+   From Layers 2 and 3 — legislatures preserve visible obligations and strip the mechanisms that sustain them.
+   From Layer 4 — hollowing-out is accomplished through a small, recurring repertoire of drafting moves, and here is the typology.
+   From Layer 5 — consequential amendments are routinely described in procedural language.
+   From Layer 6 — alteration clusters in identifiable procedural windows.
+Which one leads will be known by roughly the eighth or ninth coded case.
+
+
+
+
+14. Limitations and scope conditions
+To be stated on the Method page, not buried:
+
+1. Initiated statutes only. Constitutional amendments are out of scope, which excludes several of the most-cited examples in this
+   area.
+2. Formal legal change only. The measure does not capture non-enforcement, underfunding through administrative discretion, or
+   slow-walking — alternative routes to the same outcome. Gerber and colleagues found exactly this kind of implementation subversion,
+   and no text-based method can register it.
+3. Small n. Fifteen verified cases and roughly thirty machine-coded ones support description and typology, not hypothesis testing.
+   Rule-regime comparisons are suggestive; Arizona correlates with everything else about Arizona.
+4. Direction is a judgment. Measured against the initiative’s stated purpose. Contestable, and stated as such.
+5. Coverage gaps. Some cases will fail text retrieval. The resolution rate is reported and the pattern of missingness described.
+6. Ballotpedia-derived starting list. The corpus begins from a tracker whose unit of observation has known blind spots (§5.4).
+
+
+
+
+15. Roadmap
+Stage 1 — Prototype. Two cases, hand-coded and pipeline-coded, compared. Covered by the companion document.
+
+Stage 2 — Case list verification. Audit the Ballotpedia-derived list against primary sources. Produce the confirmed corpus.
+
+Stage 3 — Fifteen verified cases. Full schema, full validation, published.
+
+Stage 4 — Full machine-coded corpus. All known cases, marked pending review.
+
+Stage 5 — Site and paper. The paper is the argument; the site is the evidence. Whether the site or the paper is the primary deliverable
+is a question for the faculty advisor, and it changes how the final three weeks are spent.
+
+Beyond the semester. Hand-verify the remaining cases. Extend the window earlier than 2010 and later than 2024.
+
+Deferred extensions, recorded so they are not lost:
+
+   Justification analysis. How legislators publicly justify overriding a popular vote — floor statements, committee testimony, sponsor
+   memos. Currently deferred on retrieval-cost grounds; a natural second half of the project.
+   Vehicle choice, large-n. Code every initiative in the twenty-one states on one dimension: statutory or constitutional. Several
+   hundred measures rather than thirty. The question: do campaigns increasingly choose the constitutional route, and does that shift
+   happen faster in states where legislatures can alter statutes freely? This is the escalation cycle made measurable, and it would give
+   the project a large-n behavioral layer beneath its small-n measurement layer.
+
+
+
+
+16. Glossary
+Adopt and amend — A legislature enacting an indirect initiative before the election to keep it off the ballot, then amending it under a
+lower threshold.
+
+Collation spine — A version-independent backbone onto which every version of a document maps; the mechanism for persistent
+provision identity.
+
+Diverse-case design — Case selection maximizing variance on theoretically relevant dimensions rather than mirroring a population.
+
+Direct initiative — Qualifies for the ballot by signature alone.
+
+Emergency clause — A legislative declaration that, in some states, blocks a veto referendum against the bill.
+
+Exemption sweep — The pipeline step searching the whole amended statute for language limiting a provision that survived textually.
+
+Indirect initiative — Goes to the legislature before reaching the ballot.
+
+Initiated statute — A citizen-proposed ordinary law. The unit of analysis for this project.
+
+Purpose-fidelity regime — A state rule permitting amendment only where it furthers the measure’s purpose.
+
+Spine ID — A persistent, human-legible provision identifier, e.g. MO-2024-PropA-p017 .
+
+Witness — One version of a legal text: the voter-enacted measure, an amending bill, or the current statute.
+17. Principal sources
+   Gerber, Lupia, McCubbins and Kiewiet, Stealing the Initiative (2001) — legislative subversion of voter-ratified measures in California.
+   Elite-interview study of Maine legislators, finding alteration motivated by correction rather than subversion.
+   Ballotpedia, tracking of legislative alteration of initiated statutes, and state-by-state catalogues of alteration rules.
+   Frankenstein Variorum Edition, frankensteinvariorum.org — methodological precedent for the witness model, collation spine, and
+   heatmap navigation.
+   Primary sources: state legislature websites, state statute compilations, initiative texts as certified.
+
+Full citations to be compiled for the published Method page.
+

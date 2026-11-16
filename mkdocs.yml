@@ -20,12 +20,18 @@ nav:
       - Schema: method/schema.md
       - Validation: method/validation.md
       - Case selection: method/case-selection.md
-  - Workflow: workflow/workflow.md
+  - Workflow:
+      - Plan: workflow/plan.md
+      - How we work: workflow/workflow.md
+  - Design: design/README.md
   - Logs:
       - How the logs work: log/index.md
       - Schema changelog: log/schema-changelog.md
       - Friction log: log/friction-log.md
       - Timing: log/timing.md
+      - Journal: log/journal.md
+      - Spec drift: log/spec-drift.md
+      - Prototype friction log (archived): log/archive/schema-friction-log-prototype.md
       - Experiments:
           - E001 Prop A prototype: log/experiments/E001-prop-a-prototype.md
           - Template: log/experiments/_template.md
@@ -36,4 +42,5 @@ nav:
           - "0004 Gold is hand-coded": log/decisions/0004-gold-is-hand-coded.md
           - "0005 Provenance and denominator": log/decisions/0005-provenance-denominator.md
           - "0006 Diverse-case selection": log/decisions/0006-diverse-case-selection.md
+          - "0007 Website prototype": log/decisions/0007-website-prototype-parallel.md
   - Glossary: glossary.md
