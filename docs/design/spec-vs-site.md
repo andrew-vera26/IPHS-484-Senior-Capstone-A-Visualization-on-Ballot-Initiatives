@@ -25,7 +25,7 @@ Status values: **Met**, **Partly**, **Not built**, **Changed on purpose** (a rec
 | 5 | **Dated snapshot**: pages state when they were produced | 7.1, 13.2 | Partly | Added this pass: "Snapshot: November 15, 2026. Prototype." under the banner on every page. It is a fixed constant in `js/chrome.js`, not generated at build time; there is no build. Documentation on adding a case exists for agents (DESIGN.md 12) but not for readers. |
 | 6 | **Opening claim**, not a search box; provisional | 13.3 | Partly | The home page opens with a question ("What survives when a legislature alters an initiative?") and a lead marked "Provisional", then the strips. There is no search box. About states a method claim, marked provisional. None of the four candidate findings leads, which is correct until roughly the eighth coded case. Not changed in this pass, as instructed. |
 | 7 | **Fixed visual commitment 1**: the eye finds the hot spots | 13.1, 7.1 | Partly | Layer 1 colors make deleted provisions stand out on every strip, and strips are side by side on the home page. With two cases, almost all deleted in one, there are few contrasts to find. |
-| 8 | **Fixed visual commitment 2**: magnitude and direction in separate visual channels (intensity and hue) | 13.1, 7.2 | Changed, not recorded as such | Both are encoded, but in the same channel (cell fill color), one at a time via the lens switch. DESIGN.md 5 rules out a severity scale ("Layer 1 colors are categories, not a scale"), which removes the intensity channel. No ADR or spec-drift row records this departure. |
+| 8 | **Fixed visual commitment 2**: magnitude and direction in separate visual channels (intensity and hue) | 13.1, 7.2 | Met | "Both" lens on the case page and landing strips: hue is Layer 3 direction, Layer 1's pattern and fill (hollow, half, striped, solid) carry what happened. No light-to-dark ramp, because there is no severity score, so "intensity" is read as pattern (ADR 0008, spec-drift row). Facts only drops the hue. Before this pass both layers shared one channel, one at a time. |
 
 ## The three fixes in this pass
 
@@ -41,7 +41,7 @@ No data, counts or labels were changed. `python3 site-prototype/check_data.py` s
 
 ## Larger gaps, flagged and not fixed
 
-1. **Two-channel encoding (row 8).** The spec's fixed commitment is not met, and the departure is not recorded. Needs a decision: either an ADR and a spec-drift row saying the lens design replaces it, or a design that shows Layer 1 and Layer 3 at once (for example hue for direction and fill pattern or weight for operation).
+1. **Two-channel encoding (row 8).** Resolved in a later pass the same day: "Both" lens, ADR 0008. Remaining: Layer 3 holds `narrows` on almost every record, so the hue channel shows one color until more cases are coded.
 2. **Comparison is against one bill, not the current statute (row 1a).** Depends on outcomes indexed by bill (schema v0.3, known gap 1).
 3. **No evidence spans (row 1c).** The spec's "source span for every claim" cannot be met until spans are coded. Blocks rule 2 checks too.
 4. **Provision-type heatmap (row 2).** Not built, and should not be until Layer 2 uses one value list across cases (friction 12).
@@ -49,3 +49,9 @@ No data, counts or labels were changed. `python3 site-prototype/check_data.py` s
 6. **Snapshot is hand-set (row 5).** When the real site gets a build step (plan step 11), the date should come from the build, with the commit it was built from.
 7. **Data page lists, it does not package.** A single combined, versioned download and a reader-facing "how to add a case" note are missing.
 8. **Plan status is stale.** The design track table in `docs/workflow/plan.md` shows D1 to D5 as `todo`, although D1 to D3 have outputs. Updating it is the human's call.
+
+## Later pass: the "Both" lens (2026-11-15)
+
+A combined lens did not exist before this pass (the lenses were What happened, Type, Direction, Mechanism). Added as a fifth lens, `lens=both`. Row 8 is now Met. See DESIGN.md section 14 and ADR 0008.
+
+Colour check: the direction hues were tested with a protanopia, deuteranopia and tritanopia simulation (Machado 2009, full severity; CIELAB distance). Narrows and expands stay apart in all three (ΔE 31 or more). "No direction" was first drawn in the secondary ink, which nearly matched teal "expands" for protanopes in dark mode (ΔE 1). It now uses the full ink, which stays apart from every direction hue (ΔE 19 or more). Not fixed, because it belongs to the existing Layer 3 palette and neither value occurs in the data: `expands` and `neutral` are close for protanopes (ΔE 7 in light mode).

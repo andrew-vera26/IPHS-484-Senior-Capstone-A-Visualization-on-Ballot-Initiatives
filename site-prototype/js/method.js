@@ -2,7 +2,7 @@
 import { h, clear, fill, fmt, notCoded, routeBadge } from './util.js';
 import { loadCorpus, loadCodebookText, CUTOFF, ROUTES } from './data.js';
 import { mountChrome, getMode, onMode } from './chrome.js';
-import { LENSES, lensesFor, buildDomains, valueStyle, valueLabel, valueAnchor } from './encode.js';
+import { LENSES, singleLenses, buildDomains, valueStyle, valueLabel, valueAnchor } from './encode.js';
 
 mountChrome('method');
 const main = document.getElementById('main');
@@ -88,10 +88,14 @@ function draw() {
     h('div.layers', {}, ...layerRows.map(([n, name, kind, text]) => h('div.layer', {},
       h('span.layer-n', {}, String(n)), h('div.layer-name', {}, name, h('span.layer-kind', {}, kind)), h('p', {}, text)))),
     h('p', {}, 'There is no severity score. A strip shows what happened to each provision. It does not rank provisions by importance, which is why cells are equal in width by default.'),
+    h('h3', { id: 'both' }, 'The “Both” lens'),
+    h('p', {}, 'The “Both” lens shows two layers at once on separate channels. The ', h('b', {}, 'pattern'), ' of a cell is Layer 1, what happened to the text: hollow for unchanged, half filled for partially deleted, striped for rewritten, solid for deleted entirely. These are the same patterns the “What happened” lens uses. The ', h('b', {}, 'hue'), ' is Layer 3, the direction of the change.'),
+    h('p', {}, h('span.model-tag', {}, 'interpretation'), ' The direction hue is a judgment, not a structural fact. In ', h('b', {}, 'Facts only'), ' it is removed and every cell is drawn in one ink, so only Layer 1 remains.'),
+    h('p', {}, 'There is no light-to-dark scale for Layer 1. A darker or fuller cell would read as “worse”, and this project has no severity score. A cell that records no direction is drawn in plain ink, the same ink Facts only uses.'),
 
     h('h2', { id: 'values' }, 'The value lists'),
     h('p', {}, 'Each layer takes its values from a closed list. The lists below are computed from the coded files: every value that occurs, how many records carry it in each case, and a link that opens that case with those records picked out. The working codebook is ', h('code', {}, 'spec/codebook.md'), '; it was drawn from one case and is not yet complete.'),
-    ...lensesFor(mode).flatMap((l) => [
+    ...singleLenses(mode).flatMap((l) => [
       h('h3', { id: l.key }, `Layer ${l.layer}: ${l.name.toLowerCase()}`, l.interpretive ? h('span.model-tag', {}, 'interpretive') : null),
       l.key === 'l2' ? h('p', {}, 'The two coded cases use different lists for this layer. Values marked “not in spec/codebook.md” appear only in the South Dakota file. Comparing provision types across the two cases is not yet sound.') : null,
       l.key === 'l3' ? h('p', {}, 'Only one value occurs in the data so far. The schema also allows expands, neutral and indeterminate; no record carries them.') : null,

@@ -67,3 +67,6 @@ See `docs/design/DESIGN.md` section 12.
 
 ## Spec check (2026-11-15, branch `site-prototype-v2`)
 Compared against spec v1 sections 7, 9 and 13 in `docs/design/spec-vs-site.md`. Added: a "Snapshot: November 15, 2026. Prototype." line under the banner on every page (`SNAPSHOT` in `js/chrome.js`); four "Not coded yet" Method sections (pipeline, selection criteria, excluded cases, per-layer reliability); a Data page (`data.html`, `js/data-page.js`) in the nav. No data or counts changed; `check_data.py` passes. **Not yet looked at in a browser.**
+
+## "Both" lens (2026-11-15, branch `site-prototype-v2`)
+A fifth lens, `lens=both`, on the case page and the landing strips: Layer 1 pattern and fill, Layer 3 hue, no intensity ramp (ADR 0008, DESIGN.md section 14). Facts only drops the hue. Code: `bothStyle`, `pickKeys`, `matchesPick` and the two-channel legend in `js/encode.js`; `js/strip.js`; `.v-both-*` and `.legend-both` in the CSS. The encoding functions were checked in Node and the hues in a colour-blindness simulation. `check_data.py` passes. **Not yet looked at in a browser**, together with the earlier snapshot line, Method sections and Data page. Check: the legend's two rows wrap at 390px, legend picks via keyboard, `?lens=both&mode=facts`, and dark mode.

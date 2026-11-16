@@ -43,4 +43,5 @@ nav:
           - "0005 Provenance and denominator": log/decisions/0005-provenance-denominator.md
           - "0006 Diverse-case selection": log/decisions/0006-diverse-case-selection.md
           - "0007 Website prototype": log/decisions/0007-website-prototype-parallel.md
+          - "0008 Magnitude and direction channels": log/decisions/0008-magnitude-direction-channels.md
   - Glossary: glossary.md

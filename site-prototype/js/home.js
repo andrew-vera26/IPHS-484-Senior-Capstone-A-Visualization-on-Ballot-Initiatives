@@ -2,7 +2,7 @@
 import { h, clear, fill, params, setParams, fmt, routeBadge, figure, segmented } from './util.js';
 import { loadCorpus, ROUTES } from './data.js';
 import { mountChrome, getMode, onMode } from './chrome.js';
-import { LENSES, lensesFor, validLens, buildDomains, buildLegend } from './encode.js';
+import { lensesFor, validLens, buildDomains, buildLegend, lensSubtitle, lensTitle } from './encode.js';
 import { renderStrip, attachReadout } from './strip.js';
 
 mountChrome('home');
@@ -70,7 +70,7 @@ function draw() {
     for (const c of coded) {
       const strip = renderStrip(c, { lens: state.lens, domains, mode: state.mode, labels: false,
         hrefExtra: (state.lens !== 'l1' ? `&lens=${state.lens}` : '') });
-      attachReadout(strip, readout, state.lens, 'Point at a cell to identify a provision. Select it to read both texts.');
+      attachReadout(strip, readout, state.lens, 'Point at a cell to identify a provision. Select it to read both texts.', state.mode);
       body.append(h('div.multi-row', {},
         h('div.multi-label', {},
           h('a', { href: `case.html?case=${c.id}` }, c.title),
@@ -95,7 +95,7 @@ function draw() {
 
   const controls = [
     segmented({ label: 'Color by', value: state.lens,
-      options: lensesFor(state.mode).map((l) => ({ value: l.key, label: l.label, title: `Layer ${l.layer}: ${l.name}` })),
+      options: lensesFor(state.mode).map((l) => ({ value: l.key, label: l.label, title: lensTitle(l) })),
       onChange: (v) => { state.lens = v; setParams({ lens: v === 'l1' ? null : v }); draw(); } }),
     segmented({ label: 'Route', value: state.route,
       options: [{ value: 'all', label: 'Both, separately' }, { value: 'A', label: 'Route A' }, { value: 'B', label: 'Route B' }],
@@ -103,13 +103,13 @@ function draw() {
     segmented({ label: 'Sort', value: state.sort,
       options: [{ value: 'newest', label: 'Newest first' }, { value: 'oldest', label: 'Oldest first' }, { value: 'topic', label: 'Topic' }],
       onChange: (v) => { state.sort = v; setParams({ sort: v === 'newest' ? null : v }); draw(); } }),
-    h('div.legend-host', {}, buildLegend(corpus.cases.flatMap((c) => c.provisions), state.lens, domains, { methodLinks: true, showCounts: false })),
+    h('div.legend-host', {}, buildLegend(corpus.cases.flatMap((c) => c.provisions), state.lens, domains, { methodLinks: true, showCounts: false, mode: state.mode })),
   ];
 
   fill(figHost, figure({
     id: 'cases',
     title: 'Every coded law as one strip, one cell per provision',
-    subtitle: LENSES[state.lens].subtitle + ' Strips read left to right in the order of the law. Short cells are components.',
+    subtitle: lensSubtitle(state.lens, state.mode) + ' Strips read left to right in the order of the law. Short cells are components.',
     controls, body,
     source: 'the coded files listed on each case page, and site-prototype/data/corpus-seed.json for the list of cases.',
     note: 'Counts are on each case page; none is summed here. Strips are equal-width per record, so a longer law has narrower cells. Width carries no meaning. Cases sort within their route; routes are never mixed.',

@@ -41,6 +41,7 @@ Comparison of the frozen original specification (`spec/v1/`, v1.0, September 202
 | Selection-bias defense, tiering, counter-cases | Kept | ADR 0006 |
 | Deferred extensions: justification analysis, vehicle choice | Kept | Still deferred |
 | Per-layer reliability reporting | Kept | |
+| Visual commitment: magnitude and direction on separate channels, "intensity for magnitude, hue for direction" (7.2, 13.1) | Changed on purpose | Met by the "Both" lens: hue is Layer 3, Layer 1's pattern and fill stand in for intensity. No light-to-dark ramp, because the project has no severity score (ADR 0008) |
 
 ## How this file is used
 

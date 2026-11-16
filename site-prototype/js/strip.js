@@ -1,13 +1,13 @@
 // strip.js — one strip of cells per case, one cell per record, in reading order.
 // Used by the case page, the home page (small multiples) and the Patterns page.
 import { h } from './util.js';
-import { LENSES, valueStyle, valueLabel } from './encode.js';
+import { LENSES, valueStyle, valueLabel, bothStyle, matchesPick } from './encode.js';
 
 export const provisionHref = (c, p, extra = '') =>
   `case.html?case=${encodeURIComponent(c.id)}&p=${encodeURIComponent(p.id)}${extra}`;
 
 /**
- * opts: lens ('l1'…'l4' or 'plain' for uncolored), domains, mode, byLength,
+ * opts: lens ('l1'…'l4', 'both' for Layer 1 pattern with Layer 3 hue, or 'plain' for uncolored), domains, mode, byLength,
  *       picked (legend highlight key), selectedId, onSelect(p, event), labels (section labels),
  *       hrefExtra (query string appended to each cell link),
  *       thin (the short one-row version pinned above the panel; cells carry a tooltip)
@@ -34,14 +34,15 @@ export function renderStrip(caseObj, opts) {
       strip.append(sec);
     }
     const value = field ? p[field] : null;
-    const st = field ? valueStyle(lens, value, domains) : { cls: 'v-plain', style: '' };
+    const st = lens === 'both' ? bothStyle(p, mode) : field ? valueStyle(lens, value, domains) : { cls: 'v-plain', style: '' };
     const weight = byLength ? Math.max((p.baseText || p.compText || '').length, 1) : 1;
     secWeight += weight;
-    const key = value === null ? '__none__' : value;
     const hidden = mode !== 'facts' && p.dependencyAffected;
     const describe = [
       p.short, `section ${p.citation}`,
       field ? `${LENSES[lens].name}: ${valueLabel(lens, value)}` : null,
+      lens === 'both' ? `${LENSES.l1.name}: ${valueLabel('l1', p.l1)}` : null,
+      lens === 'both' && mode !== 'facts' ? `${LENSES.l3.name} (interpretation): ${valueLabel('l3', p.l3)}` : null,
       p.isComponent ? 'component' : null,
       p.provenance === 'inherited' ? 'inherited text' : null,
       hidden ? 'hidden change' : null,
@@ -50,7 +51,7 @@ export function renderStrip(caseObj, opts) {
       href: provisionHref(caseObj, p, hrefExtra),
       class: [st.cls, p.isComponent ? 'is-component' : '', p.provenance === 'inherited' ? 'is-inherited' : '',
         hidden ? 'is-hidden-change' : '', p.id === selectedId ? 'is-selected' : '',
-        picked !== undefined && picked === key ? 'is-picked' : ''].join(' '),
+        picked !== undefined && matchesPick(lens, p, picked) ? 'is-picked' : ''].join(' '),
       style: `${st.style}; --g:${weight}`,
       'aria-label': describe,
       title: thin ? `${p.short}, § ${p.citation}` : null,
@@ -163,7 +164,7 @@ export function layoutLabels(strip) {
 }
 
 /** One-line readout under a strip that follows hover and keyboard focus. */
-export function attachReadout(strip, readout, lens, idle) {
+export function attachReadout(strip, readout, lens, idle, mode = 'interp') {
   const field = LENSES[lens]?.field;
   const show = (cell) => {
     const p = cell?._p;
@@ -171,6 +172,8 @@ export function attachReadout(strip, readout, lens, idle) {
     readout.replaceChildren(
       h('code.readout-id', {}, p.id), h('span', {}, `§ ${p.citation}`),
       field ? h('span.readout-val', {}, valueLabel(lens, p[field])) : null,
+      lens === 'both' ? h('span.readout-val', {}, valueLabel('l1', p.l1)) : null,
+      lens === 'both' && mode !== 'facts' ? h('span.readout-val', {}, `direction: ${valueLabel('l3', p.l3)}`) : null,
       p.isComponent ? h('span.readout-tag', {}, 'component') : null,
       p.provenance === 'inherited' ? h('span.readout-tag', {}, 'inherited') : null);
   };

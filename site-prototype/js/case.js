@@ -2,7 +2,7 @@
 import { h, clear, fill, params, setParams, fmt, notCoded, routeBadge, figure, segmented } from './util.js';
 import { loadCorpus, loadCodebookText, exportRows } from './data.js';
 import { mountChrome, getMode, onMode } from './chrome.js';
-import { LENSES, lensesFor, validLens, buildDomains, buildLegend, valueLabel, valueStyle } from './encode.js';
+import { lensesFor, validLens, buildDomains, buildLegend, valueLabel, valueStyle, matchesPick, lensSubtitle, lensTitle } from './encode.js';
 import { renderStrip, attachReadout } from './strip.js';
 import { renderPanel } from './panel.js';
 import { downloadButtons, copyText } from './export.js';
@@ -133,8 +133,7 @@ function run(c) {
 
   function visible() {
     if (state.picked === undefined) return c.provisions;
-    const f = LENSES[state.lens].field;
-    return c.provisions.filter((p) => (p[f] === null ? '__none__' : p[f]) === state.picked);
+    return c.provisions.filter((p) => matchesPick(state.lens, p, state.picked));
   }
 
   function select(p, { focusPanel = true } = {}) {
@@ -148,13 +147,13 @@ function run(c) {
     fill(lensHost, segmented({
       label: 'Color by',
       value: state.lens,
-      options: lensesFor(state.mode).map((l) => ({ value: l.key, label: l.label, title: `Layer ${l.layer}: ${l.name}` })),
+      options: lensesFor(state.mode).map((l) => ({ value: l.key, label: l.label, title: lensTitle(l) })),
       onChange: (v) => { state.lens = v; state.picked = undefined; setParams({ lens: v === 'l1' ? null : v, value: null }); drawAll(); },
     }));
-    subHost.textContent = LENSES[state.lens].subtitle +
+    subHost.textContent = lensSubtitle(state.lens, state.mode) +
       (state.mode === 'facts' ? ' Facts only: the interpretive layers (3 and 4) are hidden.' : '');
     fill(legendHost, buildLegend(c.provisions, state.lens, domains, {
-      picked: state.picked, codebookText,
+      picked: state.picked, codebookText, mode: state.mode,
       onPick: (v) => { state.picked = v; setParams({ value: v ?? null }); drawAll(); },
     }));
   }
@@ -167,7 +166,7 @@ function run(c) {
     const hadFocus = stripHost.contains(document.activeElement) ? document.activeElement.dataset.id : null;
     fill(stripHost, strip);
     if (hadFocus) strip.querySelector(`[data-id="${hadFocus}"]`)?.focus();
-    attachReadout(strip, readout, state.lens, 'Point at a cell, or use the arrow keys, to identify a provision. Select it to read both texts.');
+    attachReadout(strip, readout, state.lens, 'Point at a cell, or use the arrow keys, to identify a provision. Select it to read both texts.', state.mode);
     fig.classList.toggle('deps-on', state.deps);
     drawMarks();
     drawPin();
@@ -322,6 +321,8 @@ function run(c) {
     state.mode = mode;
     const lens = validLens(state.lens, mode);
     if (lens !== state.lens) { state.lens = lens; state.picked = undefined; setParams({ lens: null, value: null }); }
+    // A pick on the direction hue means nothing once the hue is hidden.
+    if (mode === 'facts' && String(state.picked).startsWith('l3:')) { state.picked = undefined; setParams({ value: null }); }
     drawAll();
   });
   document.addEventListener('keydown', (e) => {

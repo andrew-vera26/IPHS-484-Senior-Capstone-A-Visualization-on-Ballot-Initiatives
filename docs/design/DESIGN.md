@@ -347,3 +347,17 @@ Six changes asked for by the author. Where this section and the sections above d
 4. When a Route B case is coded, add its row to the seed with `coded_file`. Every Route B block fills in by itself. Check the panel's left heading, which reads "Text as adopted" for Route B.
 5. When gold exists, add a per-record "hand-verified" state to the status label and to About. Do not add a trust badge to the strip (the brief rules it out).
 6. Consider replacing the 17-value Layer 2 palette with grouped families once the codebook settles.
+
+## 14. The "Both" lens (branch `site-prototype-v2`, 2026-11-15)
+
+Where this section and the sections above disagree, this section is what is built. Decision recorded in ADR 0008.
+
+1. **A fifth lens, "Both"** (`lens=both`), on the case page and the landing page strips, after the other four. It meets spec v1 sections 7.2 and 13.1: magnitude and direction on separate channels.
+2. **Pattern is Layer 1, hue is Layer 3.** Each cell keeps the Layer 1 pattern it has under "What happened" (hollow, half filled, striped, solid), drawn in the Layer 3 hue (`--l3-*`). CSS classes `v-both-*` take the hue from `--c`; `bothStyle()` in `js/encode.js` sets both.
+3. **No light-to-dark ramp.** A ramp would rank provisions, and there is no severity score (section 5). Pattern stands in for the spec's "intensity".
+4. **Facts only** keeps the lens but drops the hue: every cell is drawn in `--ink`. The legend shows only the pattern channel and says the hue is hidden. A legend pick on a direction value is cleared when Facts only is switched on.
+5. **No direction recorded** (three Missouri records) is drawn in `--ink`, the same as Facts only. The secondary ink was tried first and was nearly indistinguishable from "expands" for protanopes in dark mode.
+6. **Legend**: two rows, "Pattern: what happened (Layer 1)" and "Hue: direction (Layer 3)" with an "interpretation" tag, each value with its count, its "?" link to the Method page and the same button behavior as the other legends (keyboard, `aria-pressed`). Pick keys are prefixed, `value=l1:<value>` or `value=l3:<value>`, so both channels can be picked and linked. The landing page legend has no counts, as before (section 11, item 9).
+7. **Readout and cell labels** name both values; the direction is left out in Facts only.
+8. **Method page** has a short section, "The ‘Both’ lens", saying which channel is which, that the hue is interpretation, and why there is no ramp. The value lists still cover the four single-layer lenses only.
+9. **What the data shows**: Layer 3 is `narrows` on 169 of 172 records, so the lens currently looks like "What happened" in one hue. That is the data, not the encoding.
