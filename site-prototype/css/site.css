@@ -81,6 +81,38 @@ b, strong { font-weight: 650; }
 .banner b { font-weight: 800; }
 .banner a { color: inherit; font-weight: 500; letter-spacing: 0.06em; opacity: 0.85; }
 
+/* #chrome-top must not box the banner in, or it would stop sticking once the masthead scrolled away. */
+#chrome-top { display: contents; }
+
+/* ---------- pinned strip (case page, while a panel is open) ---------- */
+.pin { position: fixed; top: var(--banner-h, 30px); left: 0; right: 0; z-index: 35; background: var(--paper); border-bottom: 1px solid var(--ink); }
+.pin[hidden] { display: none; }
+.pin-inner { max-width: var(--col); margin: 0 auto; padding: 7px 20px 8px; display: flex; align-items: center; gap: 10px; }
+.pin-label { flex: none; display: flex; gap: 10px; align-items: baseline; font: 400 12.5px/1.2 var(--sans); white-space: nowrap; margin-right: 4px; }
+.pin-label code { font-weight: 700; font-size: 12.5px; }
+.pin-cite { font: 500 14px/1.2 var(--serif); }
+.pin-pos { color: var(--ink-2); font-size: 11.5px; }
+.pin-strip { flex: 1 1 auto; min-width: 0; padding: 3px 0; }
+.pin-step { flex: none; font: 500 17px/1 var(--sans); width: 26px; height: 24px; padding: 0 0 2px; border: 1px solid var(--ink-3); border-radius: 2px; background: var(--surface); color: var(--ink); cursor: pointer; }
+.pin-step:hover:not(:disabled) { border-color: var(--ink); }
+.pin-step:disabled { opacity: 0.35; cursor: default; }
+/* The thin strip never wraps: it is a place marker, one row at every width. */
+.strip.is-thin, .strip.is-thin .sec-cells { flex-wrap: nowrap !important; }
+.strip.is-thin { gap: 3px; row-gap: 0 !important; }
+.strip.is-thin .sec { flex: var(--g, 1) 1 0 !important; }
+.strip.is-thin .sec-cells { height: 14px !important; gap: 1px; }
+.strip.is-thin .cell { flex: 1 1 0 !important; min-width: 1px; height: 100% !important; }
+.strip.is-thin .cell.is-component { height: 55% !important; }
+.strip.is-thin .cell-mark { display: none; }
+.strip.is-thin .cell.is-selected { outline: 2px solid var(--ink); outline-offset: 2px; }
+.strip.is-thin .cell.is-selected::after { bottom: -9px; border-width: 4px; }
+@media (max-width: 640px) {
+  .pin-inner { padding: 6px 12px 7px; gap: 7px; }
+  .pin-cite, .pin-pos { display: none; }
+  .strip.is-thin { gap: 2px; }
+  .strip.is-thin .sec-cells { gap: 0; }
+}
+
 /* ---------- masthead ---------- */
 .mast { border-bottom: 1px solid var(--ink); background: var(--paper); }
 .mast-inner {
@@ -315,7 +347,7 @@ summary:hover { color: var(--ink); }
 .kvs-wide .kv { grid-template-columns: 190px 1fr; }
 
 /* ---------- panel ---------- */
-.panel-host { margin-top: 26px; scroll-margin-top: 60px; }
+.panel-host { margin-top: 26px; scroll-margin-top: calc(var(--banner-h, 30px) + 52px); }
 .panel-idle {
   border: 1px dashed var(--ink-3); padding: 18px 20px; font: 400 14.5px var(--sans); color: var(--ink-2); margin: 0;
 }
@@ -505,6 +537,7 @@ a.dep-chip:hover { border-color: var(--ink); }
   body { font-size: 16px; }
   .page { padding-top: 26px; }
   .lede { font-size: 19px; }
+  .lede-home { font-size: 16px; }
   .wits, .apparatus, .routes, .dve { grid-template-columns: 1fr; }
   .wit + .wit, .route-card + .route-card, .dve > div:nth-child(3) { border-left: 0; border-top: 1px solid var(--ink); padding-left: 0; }
   .wit + .wit { padding-left: 22px; }
@@ -526,7 +559,7 @@ a.dep-chip:hover { border-color: var(--ink); }
   .deps-on .strip-wrap { padding-top: 70px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
-@media print { .banner { position: static; } .mast-tools, .opts, .fig-dl { display: none; } }
+@media print { .pin { display: none; } .banner { position: static; } .mast-tools, .opts, .fig-dl { display: none; } }
 
 /* ---------- speed tracks ---------- */
 .track-row { display: grid; grid-template-columns: 250px 1fr; gap: 22px; align-items: center; padding: 20px 60px 26px 0; border-bottom: 1px solid var(--rule-soft); }

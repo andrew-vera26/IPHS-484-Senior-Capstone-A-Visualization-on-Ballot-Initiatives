@@ -93,6 +93,16 @@ function run(c) {
   const panelHost = h('div.panel-host', { id: 'panel' });
   const tableHost = h('div');
 
+  // ---------- pinned strip: a thin copy of the strip, fixed under the banner while a panel is open ----------
+  const pinStripHost = h('div.pin-strip');
+  const pinLabel = h('div.pin-label');
+  const pinStep = (dir, label, glyph) => h('button.pin-step', { type: 'button', 'aria-label': label, title: label,
+    onclick: () => { const p = c.byId.get(state.selected); const to = p && c.provisions[p.index + dir]; if (to) select(to); } }, glyph);
+  const pinPrev = pinStep(-1, 'Previous record', '‹'), pinNext = pinStep(1, 'Next record', '›');
+  const pin = h('div.pin', { hidden: true, role: 'navigation', 'aria-label': 'Your place in the law' },
+    h('div.pin-inner', {}, pinLabel, pinPrev, pinStripHost, pinNext));
+  document.body.append(pin);
+
   const fig = h('figure.fig.fig-strip', {},
     h('header.fig-head', {},
       h('h2.fig-title', {}, `Every provision of ${c.title}, in reading order`),
@@ -160,8 +170,33 @@ function run(c) {
     attachReadout(strip, readout, state.lens, 'Point at a cell, or use the arrow keys, to identify a provision. Select it to read both texts.');
     fig.classList.toggle('deps-on', state.deps);
     drawMarks();
+    drawPin();
     requestAnimationFrame(drawArcs);
   }
+
+  // The pin shows only while a panel is open and the full strip has scrolled out of view under the banner.
+  function placePin() {
+    const bannerH = document.querySelector('.banner')?.offsetHeight || 0;
+    const show = Boolean(state.selected) && stripHost.getBoundingClientRect().bottom < bannerH + 4;
+    if (pin.hidden === show) pin.hidden = !show;
+  }
+  function drawPin() {
+    const p = state.selected && c.byId.get(state.selected);
+    if (!p) { pin.hidden = true; clear(pinStripHost); return; }
+    fill(pinLabel, h('code', {}, p.short), h('span.pin-cite', {}, `§ ${p.citation}`),
+      h('span.pin-pos', {}, `${p.index + 1} of ${c.provisions.length}`));
+    pinPrev.disabled = p.index === 0;
+    pinNext.disabled = p.index === c.provisions.length - 1;
+    fill(pinStripHost, renderStrip(c, {
+      lens: state.lens, domains, mode: state.mode, picked: state.picked, selectedId: state.selected,
+      onSelect: (x) => select(x), labels: false, thin: true,
+    }));
+    placePin();
+  }
+  let pinFrame = 0;
+  const schedulePin = () => { if (!pinFrame) pinFrame = requestAnimationFrame(() => { pinFrame = 0; placePin(); }); };
+  window.addEventListener('scroll', schedulePin, { passive: true });
+  window.addEventListener('resize', schedulePin);
 
   function drawMarks() {
     const cts = c.counts;
@@ -264,7 +299,7 @@ function run(c) {
     if (focus) {
       panel.querySelector('.panel-title').focus({ preventScroll: true });
       const r = panel.getBoundingClientRect();
-      if (r.top < 60 || r.top > innerHeight * 0.6) panelHost.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      if (r.top < 96 || r.top > innerHeight * 0.6) panelHost.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
   }
 

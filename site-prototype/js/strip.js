@@ -9,13 +9,14 @@ export const provisionHref = (c, p, extra = '') =>
 /**
  * opts: lens ('l1'…'l4' or 'plain' for uncolored), domains, mode, byLength,
  *       picked (legend highlight key), selectedId, onSelect(p, event), labels (section labels),
- *       hrefExtra (query string appended to each cell link)
+ *       hrefExtra (query string appended to each cell link),
+ *       thin (the short one-row version pinned above the panel; cells carry a tooltip)
  */
 export function renderStrip(caseObj, opts) {
-  const { lens = 'l1', domains, mode = 'interp', byLength = false, picked, selectedId, onSelect, labels = true, hrefExtra = '' } = opts;
+  const { lens = 'l1', domains, mode = 'interp', byLength = false, picked, selectedId, onSelect, labels = true, hrefExtra = '', thin = false } = opts;
   const field = LENSES[lens]?.field;
   const strip = h('div.strip', {
-    class: [byLength ? 'by-length' : '', picked !== undefined ? 'has-pick' : '', labels ? '' : 'no-labels'].join(' '),
+    class: [byLength ? 'by-length' : '', picked !== undefined ? 'has-pick' : '', labels ? '' : 'no-labels', thin ? 'is-thin' : ''].join(' '),
     role: 'group',
     'aria-label': `${caseObj.title}: ${caseObj.provisions.length} records in reading order`,
   });
@@ -52,6 +53,7 @@ export function renderStrip(caseObj, opts) {
         picked !== undefined && picked === key ? 'is-picked' : ''].join(' '),
       style: `${st.style}; --g:${weight}`,
       'aria-label': describe,
+      title: thin ? `${p.short}, § ${p.citation}` : null,
       'aria-current': p.id === selectedId ? 'true' : null,
       tabindex: '-1',
       dataset: { id: p.id },

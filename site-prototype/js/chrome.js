@@ -83,6 +83,10 @@ export function mountChrome(active) {
 
   const top = document.getElementById('chrome-top');
   top.replaceChildren(h('a.skip', { href: '#main' }, 'Skip to content'), banner, mast);
+  // The banner's height, for anything that has to sit directly under it (the pinned strip on the case page).
+  const setBannerH = () => document.documentElement.style.setProperty('--banner-h', `${banner.offsetHeight}px`);
+  setBannerH();
+  if (typeof ResizeObserver !== 'undefined') new ResizeObserver(setBannerH).observe(banner);
 
   const foot = h('footer.foot', {},
     h('div.foot-inner', {},
