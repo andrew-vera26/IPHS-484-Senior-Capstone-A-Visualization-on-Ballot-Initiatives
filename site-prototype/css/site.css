@@ -233,10 +233,14 @@ p.fig-status { font: 600 12.5px/1.5 var(--sans); }
 
 .strip { display: flex; flex-wrap: nowrap; gap: 5px; align-items: flex-end; }
 .sec { flex: var(--g, 1) 1 0; min-width: 0; display: flex; flex-direction: column; }
+.sec-head { position: relative; display: block; height: calc(var(--label-rows, 1) * 13px + 9px); margin-bottom: 4px; }
+.sec-tick { position: absolute; left: 0; bottom: 0; width: 1px; height: calc(var(--row, 0) * 13px + 8px); background: var(--ink-3); }
 .sec-label {
-  font: 500 10px/1 var(--mono); color: var(--ink-2); white-space: nowrap; overflow: hidden;
-  height: 20px; padding-top: 3px; border-left: 1px solid var(--ink-3); padding-left: 3px; margin-bottom: 9px;
+  position: absolute; left: 0; bottom: calc(var(--row, 0) * 13px + 9px);
+  font: 500 10px/13px var(--mono); color: var(--ink-2); white-space: nowrap; background: var(--paper); z-index: 1;
 }
+.sec-head.is-omitted .sec-label { visibility: hidden; }
+.sec-head.is-omitted .sec-tick { height: 5px; }
 .sec-cells { display: flex; gap: 1px; align-items: flex-end; height: var(--cell-h); }
 .cell {
   flex: var(--g, 1) 1 0; min-width: 2px; height: 100%; position: relative; display: block; text-decoration: none;
@@ -491,7 +495,6 @@ a.dep-chip:hover { border-color: var(--ink); }
   .strip.no-labels:not(.by-length) .cell.is-component { height: 14px; }
   .strip-wrap { overflow: hidden; }
   .strip.by-length { overflow-x: auto; }
-  .strip.by-length .sec-label { font-size: 9px; }
 }
 @media (max-width: 640px) {
   body { font-size: 16px; }

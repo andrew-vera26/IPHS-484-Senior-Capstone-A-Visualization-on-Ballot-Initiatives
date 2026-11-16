@@ -29,7 +29,7 @@ export function renderStrip(caseObj, opts) {
       secKey = p.section; secWeight = 0;
       secCells = h('div.sec-cells');
       sec = h('div.sec', { title: `Section ${p.section}` },
-        labels ? h('span.sec-label', { 'aria-hidden': 'true' }, p.section) : null, secCells);
+        labels ? h('span.sec-head', { 'aria-hidden': 'true' }, h('span.sec-tick'), h('span.sec-label', {}, p.section)) : null, secCells);
       strip.append(sec);
     }
     const value = field ? p[field] : null;
@@ -66,6 +66,9 @@ export function renderStrip(caseObj, opts) {
   }
   closeSec();
 
+  // Labels are laid out once the strip has a width, and again whenever it changes.
+  if (labels && typeof ResizeObserver !== 'undefined') new ResizeObserver(() => layoutLabels(strip)).observe(strip);
+
   // Roving tabindex: one tab stop, arrow keys move between cells.
   const cells = [...strip.querySelectorAll('.cell')];
   const start = cells.find((c) => c.dataset.id === selectedId) || cells[0];
@@ -83,6 +86,78 @@ export function renderStrip(caseObj, opts) {
     cells[i].tabIndex = -1; next.tabIndex = 0; next.focus();
   });
   return strip;
+}
+
+const LABEL_ROWS = 5, LABEL_GAP = 6, SEARCH_LIMIT = 200000;
+
+// Two labels cannot share a row if their text would overlap.
+const overlap = (k, j) => k.a < j.b + LABEL_GAP && j.a < k.b + LABEL_GAP;
+// The higher label's tick would run behind the lower label's text. Allowed, but counted and kept to a minimum.
+const crosses = (hi, lo) => hi.x > lo.a && hi.x < lo.b;
+
+/**
+ * Rows for one visual line of labels (-1 = left out). A bounded search, right to
+ * left, for the assignment that leaves out the fewest labels, then has the fewest
+ * ticks passing behind another label, then uses the fewest rows, then keeps labels low.
+ */
+function assignRows(line) {
+  const n = line.length, cur = new Array(n).fill(-1);
+  let best = null, bestCost = [Infinity, 0, 0, 0], steps = 0;
+  const less = (c, d) => { for (let i = 0; i < 4; i++) if (c[i] !== d[i]) return c[i] < d[i]; return false; };
+  const go = (i, omitted, crossed, top, sum) => {
+    if (steps++ > SEARCH_LIMIT || !less([omitted, crossed, top, sum], bestCost)) return;
+    if (i < 0) { best = [...cur]; bestCost = [omitted, crossed, top, sum]; return; }
+    const k = line[i];
+    for (let r = 0; r < LABEL_ROWS; r++) {
+      let ok = true, x = 0;
+      for (let j = i + 1; j < n && ok; j++) {
+        const rj = cur[j];
+        if (rj < 0) continue;
+        if (rj === r) ok = !overlap(k, line[j]);
+        else if (rj > r ? crosses(line[j], k) : crosses(k, line[j])) x++;
+      }
+      if (ok) { cur[i] = r; go(i - 1, omitted, crossed + x, Math.max(top, r + 1), sum + r); }
+    }
+    cur[i] = -1; go(i - 1, omitted + 1, crossed, top, sum);
+  };
+  go(n - 1, 0, 0, 1, 0);
+  return best || cur;
+}
+
+/**
+ * Place the section labels so that none is clipped and none overlaps another.
+ * A label that does not fit beside its neighbours moves up a row (up to LABEL_ROWS);
+ * a label that would run past the right edge is shifted left to end at the edge.
+ * A tick joins each label to the start of its section. A label that still cannot
+ * be placed is left out whole, never cut; its section stays named in the readout.
+ */
+export function layoutLabels(strip) {
+  const heads = [...strip.querySelectorAll('.sec-head')];
+  if (!heads.length || !strip.clientWidth) return;
+  const box = strip.getBoundingClientRect();
+  const items = heads.map((head) => {
+    const label = head.querySelector('.sec-label');
+    label.style.transform = '';
+    const r = head.getBoundingClientRect();
+    const w = Math.ceil(label.getBoundingClientRect().width);
+    const x = r.left - box.left;
+    const a = Math.max(0, Math.min(x, box.width - w));   // shifted left only at the right edge
+    return { head, label, line: Math.round(r.top), x, a, b: a + w, row: -1 };
+  });
+  // Wrapped strips (narrow screens) are laid out one visual line at a time.
+  const lines = new Map();
+  for (const it of items) (lines.get(it.line) || lines.set(it.line, []).get(it.line)).push(it);
+  let rows = 1;
+  for (const line of lines.values()) {
+    const best = assignRows(line);
+    line.forEach((it, i) => { it.row = best[i]; rows = Math.max(rows, best[i] + 1); });
+  }
+  strip.style.setProperty('--label-rows', String(rows));
+  for (const it of items) {
+    it.head.classList.toggle('is-omitted', it.row < 0);
+    it.head.style.setProperty('--row', String(Math.max(it.row, 0)));
+    it.label.style.transform = it.a !== it.x ? `translateX(${Math.round(it.a - it.x)}px)` : '';
+  }
 }
 
 /** One-line readout under a strip that follows hover and keyboard focus. */
