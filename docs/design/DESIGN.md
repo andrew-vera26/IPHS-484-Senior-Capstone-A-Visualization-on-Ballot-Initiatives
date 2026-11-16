@@ -306,4 +306,30 @@ No library is vendored. The site needs none.
 
 ## 11. Decisions made during the build
 
-(Appended as the build proceeds.)
+Recorded 2026-11-15. Where this section and the sections above disagree, this section is what was built.
+
+1. **No library and no font files are vendored.** The site uses system fonts and hand-written SVG and CSS. It makes no network request other than reading the repo's own files.
+2. **Route comes from the seed.** `data.js` joins `corpus-seed.json` to the coded files on `measure_id`. The seed rows carry two extra keys, `measure_id` and `coded_file`, for coded cases only. These are join keys to files already in the repo, not new facts.
+3. **South Dakota's denominator is "Not coded yet".** The file has no `counts_in_denominator`. The site does not assume `true`. Its cells are drawn full height and the marks legend says the component flag is not coded yet.
+4. **Percentages are withheld.** Counts are shown as "n of N". This goes slightly beyond the brief and is deliberate while the coding is unaudited.
+5. **The home page is the small-multiples view** (brief item 8). There is no separate landing page.
+6. **Items 9 to 13 live on one Patterns page**, one figure each, each split into a Route A block and a Route B block.
+7. **Mechanical word comparison** is on by default in the panel, labeled, and can be switched off. It highlights words outside the longest common subsequence and never alters text. Texts over about 12 million comparison cells are not compared.
+8. **Facts-only mode** hides: the Direction and Mechanism lenses, those two rows and the rationale in the panel, the hidden-change diamond and note, the mechanism matrix, the gap-flag count, and the Layer 3 and 4 value lists on the Method page. It keeps dependency links, and each dependency chip shows that provision's own Layer 1 value. CSV and JSON exports drop the Layer 3 and 4 columns in this mode.
+9. **Legend on the home page shows no counts**, because a count there would sum across cases.
+10. **The mechanism matrix has no totals**, across cases or routes.
+11. **Section grouping** on the strip is derived in `data.js` from the citation (text before the first parenthesis; South Dakota citations are grouped by chapter). It is a display aid, not coded data.
+12. **Qualitative palette has 18 colors** for Layers 2 and 4. With 17 Layer 2 values across two cases some are close; the legend, the readout line and the table carry the names. Paring Layer 2 down is a schema matter (friction entry 12).
+13. **Narrow screens:** the strip wraps by section and long sections wrap again; the two texts stack. The sticky two-tab switch described in section 9 was not built.
+14. **The strip is a group of links with a roving tab stop**, not a listbox. Each cell is a real link to its permalink, so it can be opened in a new tab.
+15. **Empty witness text** reads "No text stored for this witness", not "Not coded yet", because for a deleted provision the absence is the coded outcome.
+16. **Not built:** pinning (Constitute), a search box, print styles beyond the basics, the form-style coding screen from `docs/planning.md`.
+
+## 12. What a later model should do next
+
+1. When the schema moves to four tables, rewrite `loadCorpus()` and `normalizeProvision()` in `js/data.js` only. Add `enacted_by` to the initiative table and delete the seed join.
+2. When evidence spans are filled, render them in `panel.js` (`evidence` block) by wrapping the stored characters at the offsets, the same way `diff` spans are wrapped. Verify each span against the source before showing it.
+3. When a second bill is coded for a case, add a bill switch to the case header and a real third row to the erosion timeline.
+4. When a Route B case is coded, add its row to the seed with `coded_file`. Every Route B block fills in by itself. Check the panel's left heading, which reads "Text as adopted" for Route B.
+5. When gold exists, add a per-record "hand-verified" state to the status label and to About. Do not add a trust badge to the strip (the brief rules it out).
+6. Consider replacing the 17-value Layer 2 palette with grouped families once the codebook settles.

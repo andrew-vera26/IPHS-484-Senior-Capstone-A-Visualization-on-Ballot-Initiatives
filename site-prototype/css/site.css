@@ -532,3 +532,4 @@ a.dep-chip:hover { border-color: var(--ink); }
 .track-axis-label { font: 500 11.5px var(--sans); color: var(--ink-2); text-align: right; }
 .legend-static { cursor: default; }
 .legend-static:hover { border-color: transparent; }
+.prose .table-scroll { width: min(1080px, 100vw - 40px); max-width: none; }
