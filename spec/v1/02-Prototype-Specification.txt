@@ -1,0 +1,311 @@
+Prototype Specification
+Two Cases as the Testing Ground for the Provision-Survival Pipeline
+Andrew Vera · Kenyon College · IPHS 484 Senior Seminar
+Version 1.0 — September 2026
+
+
+
+0. Prerequisite
+This document assumes the companion document, What Survives: Measuring Legislative Alteration of Voter-Approved Ballot Initiatives
+— Project Context and Design, has been read. Terms used here without definition — spine ID, witness, the nine layers, exemption sweep
+— are defined there.
+
+
+
+
+1. What the prototype is for
+The prototype codes two ballot initiatives end to end and compares them. It is not a scaled-down version of the project. It is an
+instrument test, and it has four jobs:
+
+Find out whether the schema survives contact with real statutory text. Nine layers of tags were designed in the abstract. Some
+categories will not fit what legislatures actually write. Some values will go unused. Something will need a slot that does not exist. All of
+this is cheaper to discover on two cases than on fifteen.
+
+Establish the real cost per case. The decision to publish fifteen hand-verified cases is provisional and rests on a guess. Timing two
+cases honestly — including the hand-coding, not just the pipeline run — produces the number that determines project scope.
+
+Test whether the alignment step works on legal text. This is the technical risk. Semantic matching of provisions across
+renumbering and rewording is the part that could simply fail, and the prototype is where that is found out.
+
+Produce the first real comparison. Two cases coded with the same instrument, set side by side, is the smallest object that
+demonstrates what the tool is for.
+
+A prototype that reveals the schema is wrong has succeeded.
+
+
+
+
+2. The two cases
+
+2.1 Recommended pair
+Missouri Proposition A (2024) and South Dakota Initiated Measure 22 (2016).
+
+
+2.2 Case 1 — Missouri Proposition A
+
+ Field                                                     Value
+
+ Approved                                                  November 2024, ~58%
+
+ Vehicle                                                   Initiated statute, direct
+
+ Rule regime                                               Unrestricted
+
+ Altering instrument                                       HB 567, signed July 10, 2025
+
+ Effective                                                 August 28, 2025
+
+ Profile                                                   Selective partial hollowing
+
+
+Proposition A did three things: raised the minimum wage to $15, indexed future adjustments to the Consumer Price Index from 2027,
+and required most private employers to provide earned paid sick time at one hour per thirty worked. The sick leave requirement took
+effect May 1, 2025. HB 567 repealed the paid sick time provisions entirely and repealed the inflation indexing. The $15 wage survived.
+
+What this case exercises:
+
+    Alignment across partial survival. Some provisions survive, some vanish, some may be reworded. This is the real alignment
+    problem, not a trivial version of it.
+    The exemption sweep. The minimum wage provision survives textually. Without the sweep, it codes as intact . With it, the stripped
+    indexing should surface. If the sweep does not catch this, the sweep does not work.
+    Layer 2’s escalation/core-obligation distinction. This case is the reason that distinction exists. If the coding does not separate
+    the $15 from the CPI indexing, Layer 2 has failed its design purpose.
+    Layer 4 mechanisms — at minimum outright repeal ; possibly others.
+    Layer 5 description gap. HB 567’s framing against its measured effect.
+    Layer 8 escalation cycle. Advocates subsequently pursued the same policy as a constitutional amendment.
+    Layer 6 before/after-effect field. Sick leave was repealed roughly four months after it began operating.
+
+
+2.3 Case 2 — South Dakota Initiated Measure 22
+
+ Field                                                                       Value
+
+ Approved                                                                    November 2016
+
+ Vehicle                                                                     Initiated statute
+
+ Rule regime                                                                 Unrestricted
+
+ Altering instrument                                                         HB 1069, introduced January 20, 2017; signed February 2, 2017
+
+ Profile                                                                     Total repeal, ~2 months
+
+
+Measure 22 was a campaign finance, lobbying and ethics package that limited political contributions, created a publicly funded
+campaign finance program, and established a state ethics commission to enforce it. It was repealed outright roughly two months after
+passage. Because HB 1069 carried an emergency clause, citizens were barred from mounting a veto referendum against the repeal.
+
+What this case exercises:
+
+    The degenerate case. Every provision is deleted. The aligner should return none for all of them. If it instead forces matches against
+    unrelated surviving statutory text, the most dangerous failure mode in the pipeline has been caught on a real case rather than a
+    synthetic one. This case functions as a live negative control.
+    Layer 4’s referendum-proof clause attachment . The emergency clause is the reason that value exists in the schema.
+    Layer 6 speed and procedural fields. Two months is the fast extreme.
+    Cross-state portability. Two different state code structures, retrieval paths, and drafting conventions. A pipeline that only works on
+    Missouri is not a pipeline.
+
+
+2.4 Why this pair rather than another
+Three reasons, in order:
+
+Maximum contrast on the outcome variable. Total repeal against selective partial hollowing. If the tool cannot distinguish these two
+cases clearly, it cannot distinguish anything, and that is worth knowing in week one.
+
+One variable held constant. Both states are unrestricted regimes. The prototype is testing the instrument, not the doctrinal
+hypothesis, so holding rule regime constant removes a source of variation that would complicate interpretation of pipeline behavior.
+
+Cross-state from the start. Building on two states forces the retrieval and parsing layers to generalize immediately rather than being
+quietly overfit to one state’s code structure.
+
+
+2.5 Documented alternative
+Missouri Proposition A + Missouri Proposition B (2010). Same state, fourteen years apart, both selective. Proposition B had its
+fifty-dog cap, breeding frequency limit and cage-height requirement stripped while its care standards and criminal penalty survived —
+which exercises threshold adjustment and numeric-provision handling better than either recommended case.
+
+The trade-off: two selective cases give a richer test of Layer 4, but lose the degenerate-case check and the cross-state portability test.
+This pair is the fallback if South Dakota text retrieval proves difficult.
+
+
+
+
+3. Source documents required
+For each case, four documents:
+
+1. The initiative as certified for the ballot — the voter-enacted text. This is the base witness and the source of all spine IDs.
+2. The amending or repealing bill as enacted — HB 567; HB 1069.
+3. The current statutory sections, as they now stand in the state code.
+4. Description materials for Layer 5 — bill title, official summary, fiscal note, sponsor statement, governor’s message where available.
+
+Sources: state legislature websites, state statute compilations, secretary of state ballot measure archives. Ballotpedia measure pages are
+acceptable for locating documents and for Layer 7 context fields, but primary text must come from primary sources.
+
+Retrieval is the first task and the first gate. If any of the four documents cannot be obtained for a case within a reasonable effort,
+that is a finding about the project’s feasibility and should be recorded rather than worked around silently.
+4. Sequence
+The order matters and should not be rearranged for convenience.
+
+
+4.1 Hand-code first, with no pipeline
+Both cases are coded entirely by hand before any code is written. Read the initiative, decompose it into provisions, assign spine IDs, read
+the amending bill, and fill every layer manually.
+
+This is not a validation step performed after the fact. It is the design input. Two things emerge only from reading actual statutory text:
+
+    Categories that do not fit. A provision that is half obligation and half definition; a bill section that amends three provisions at once.
+    The reach for a tag that does not exist. Noticing that you want to mark something the schema has no slot for is the most reliable
+    signal that a layer is incomplete, and it does not happen while designing in the abstract.
+
+Record time spent. Per case, and broken down by stage. This number sets project scope.
+
+Record every schema friction encountered, even minor ones, in a running log. That log is an output of the prototype, not a
+byproduct.
+
+
+4.2 Then build the pipeline
+Implement, in order:
+
+1. Document retrieval and parsing into provisions
+2. Spine ID assignment on the base witness
+3. Embedding and hybrid retrieval (dense + BM25, reciprocal rank fusion)
+4. Call 1 — alignment adjudication, including the none branch
+5. Call 2 — effect classification, Layers 1 and 3, with rationale and source span
+6. Call 3 — exemption sweep over the full amended statute
+7. Layers 4 through 9 population
+8. Output as structured JSON, one record per provision
+
+Caching is implemented from the start, not retrofitted. The pipeline will be re-run many times as the codebook changes.
+
+
+4.3 Then compare
+Machine output against hand coding, per layer. Not a single accuracy number — a per-layer agreement figure, with every disagreement
+inspected individually.
+
+Every disagreement is read, not just counted. The distribution of disagreement types is more informative than the rate, and it tells
+you whether the problem is the model, the prompt, or the codebook.
+
+
+
+
+5. What the prototype produces
+Six artifacts. Each is a deliverable, not a side effect.
+
+1. Two hand-coded case files, complete across all nine layers.
+2. Two machine-coded case files in the same schema.
+3. A per-layer agreement report, with every disagreement inspected and categorized.
+4. A schema friction log — categories that did not fit, values never used, values that were needed and absent.
+5. A timing record — hours per case, by stage.
+6. A working pipeline that runs on both cases from source documents to structured output.
+
+No visualization. No website. Explicitly out of scope for this stage.
+
+
+
+
+6. Acceptance criteria
+The prototype is complete when all of the following are true. Several are deliberately not thresholds on quality — a prototype that fails
+loudly has done its job.
+ #                                                                        Criterion
+
+ 1                                                                        Both cases are hand-coded across all nine layers, by the researcher, before
+                                                                          any machine coding was consulted.
+
+ 2                                                                        The pipeline runs end to end on both cases without manual intervention
+                                                                          between stages.
+
+
+ 3                                                                        Per-layer agreement is computed and reported. Layer 1 is expected to be
+                                                                          high; Layers 3 and 4 are expected to be lower. No threshold is set in advance
+                                                                          — the figures are the finding.
+
+ 4                                                                        On South Dakota IM 22, the aligner returns none for deleted provisions
+                                                                          rather than forcing matches. This is pass/fail.
+
+ 5                                                                        On Missouri Proposition A, the exemption sweep flags the minimum wage
+                                                                          provision as affected by the removal of indexing. This is pass/fail.
+
+ 6                                                                        Every disagreement between hand and machine coding has been individually
+                                                                          inspected and categorized.
+
+ 7                                                                        The schema friction log contains at least one substantive entry. An empty log
+                                                                          means the hand-coding was not done attentively.
+
+ 8                                                                        Timing is recorded per case per stage.
+
+ 9                                                                        Every API call is cached and the run is reproducible from cache.
+
+
+Criteria 4 and 5 are the two real tests. Criterion 4 tests whether the aligner can decline to match — the failure mode that silently
+corrupts everything downstream. Criterion 5 tests whether the exemption sweep, the project’s most distinctive technical claim, does
+what it claims.
+
+
+
+
+7. Known risks
+Alignment may not work on legal text. The central technical risk. Mitigation: hybrid retrieval rather than embeddings alone; the
+none branch; hand-coding first so there is ground truth to measure against. If alignment fails, the project needs restructuring, and week
+two is the right time to learn that.
+
+The degenerate case may not be informative. If IM 22’s repeal is a single bill section repealing an entire chapter, there may be little
+for the pipeline to do. Mitigation: this is still a valid negative-control test, and if it proves too thin, substitute Missouri Proposition B per
+§2.5.
+
+Document retrieval may be harder than expected, particularly the 2016 South Dakota text and the statutory sections as they stood
+before repeal. Mitigation: retrieval is gate one; failure is recorded, not worked around.
+
+Hand-coding may take far longer than estimated. This is not a risk to mitigate but a number to measure. If a case takes three days,
+fifteen cases is not a semester and the scope decision changes.
+
+The schema may prove substantially wrong. The most likely outcome, and the reason the prototype exists. Revisions are expected
+and should be logged rather than silently applied.
+
+
+
+
+8. Explicitly out of scope
+     Any visualization, website, or interface work
+     Cases beyond these two
+     Cross-model agreement checking (deferred to the full build)
+     Synthetic perturbation testing (deferred; hand-coding is the ground truth at this stage)
+     The full corpus verification audit
+     Any claim about what the findings mean
+
+
+
+
+9. Open questions
+Unresolved, and offered as such rather than papered over.
+
+What is a provision? The unit of decomposition is not obvious. Statutory subsections do not map cleanly onto discrete obligations —
+one subsection may carry three, and one obligation may span two. The hand-coding pass should produce a working rule, and that rule
+should be written down.
+
+How are bill sections that amend multiple provisions handled? One section of HB 567 may touch several spine IDs. The mapping is
+many-to-many and the data model needs to accommodate it.
+What is the base witness when the initiative was amended before it ever took effect? Not an issue for these two cases, but it will
+arise.
+
+How is none distinguished from retrieval failure? A provision with no counterpart and a provision whose counterpart the retriever
+failed to surface look identical in the output. These need to be distinguishable or the deletion count is unreliable.
+
+Does the exemption sweep need to run over the whole state code, or only the amended statute? Definitional narrowing can
+occur in a general definitions chapter outside the statute being amended. The full-code version is more correct and much more
+expensive. The prototype should scope to the amended statute and record whether that appears to have missed anything.
+
+Is fifteen cases the right number? Deliberately unanswered. The timing record answers it.
+
+
+
+
+10. What would make this prototype fail
+Worth stating plainly, since it is easy to produce something that looks finished and taught nothing:
+
+    Hand-coding done after seeing machine output, or skipped
+    Disagreements counted but not read
+    An empty friction log
+    The exemption sweep implemented but never tested against a case where it should fire
+    Timing not recorded
+    Schema revisions applied silently rather than logged
+
