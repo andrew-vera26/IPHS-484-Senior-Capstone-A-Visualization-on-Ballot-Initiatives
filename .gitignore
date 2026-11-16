@@ -7,3 +7,4 @@ site/
 out/
 .cache/
 docs/design/refs/
+.gstack/
