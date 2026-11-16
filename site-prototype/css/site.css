@@ -82,7 +82,7 @@ b, strong { font-weight: 650; }
 .banner a { color: inherit; font-weight: 500; letter-spacing: 0.06em; opacity: 0.85; }
 
 /* Dated snapshot line, directly under the banner on every page. Not sticky. */
-.snapshot { margin: 0; padding: 4px 20px; text-align: center; font: 500 12px/1.3 var(--sans); letter-spacing: 0.04em; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); }
+.snapshot { margin: 0; padding: 7px 20px; text-align: center; font: 500 12px/1.3 var(--sans); letter-spacing: 0.04em; color: var(--ink-2); border-bottom: 1px solid var(--rule-soft); }
 
 /* #chrome-top must not box the banner in, or it would stop sticking once the masthead scrolled away. */
 #chrome-top { display: contents; }
@@ -141,16 +141,17 @@ b, strong { font-weight: 650; }
 }
 
 /* ---------- segmented controls ---------- */
-.control { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.control { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; max-width: 100%; }
 .control-label, .section-label, .fig-foot b, .kv dt, .layer-tag, .wit-id, th {
   font: 600 11.5px/1.3 var(--sans); letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-2);
 }
-.seg { display: inline-flex; border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; }
+/* Separators are the 1px gap showing the ink background, so a control too wide for its row wraps onto a
+   second row of buttons with a rule between rows (five lenses at 390px), instead of scrolling the page. */
+.seg { display: inline-flex; flex-wrap: wrap; max-width: 100%; gap: 1px; background: var(--ink); border: 1px solid var(--ink); border-radius: 2px; overflow: hidden; }
 .seg-btn {
   font: 500 13px/1 var(--sans); padding: 8px 12px; background: var(--paper); color: var(--ink);
-  border: 0; border-left: 1px solid var(--ink); cursor: pointer; white-space: nowrap;
+  border: 0; cursor: pointer; white-space: nowrap; flex: 1 0 auto;
 }
-.seg-btn:first-child { border-left: 0; }
 .seg-btn[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
 .seg-btn:focus-visible { outline-offset: -4px; outline-color: var(--mark); }
 .btn {
@@ -588,10 +589,10 @@ a.dep-chip:hover { border-color: var(--ink); }
 .track-open span { top: -20px; }
 .track { margin: 14px 0; }
 .track-axis-label { font: 500 11.5px var(--sans); color: var(--ink-2); text-align: right; }
-.legend-both { display: grid; gap: 6px; }
-.legend-channel { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; }
+.legend-both { display: grid; gap: 10px; }
+.legend-channel { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
 .legend-cap { font: 600 11px/1.3 var(--sans); letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-2); display: inline-flex; align-items: center; gap: 6px; }
-.legend-note { margin: 0; font: 400 12.5px/1.4 var(--sans); color: var(--ink-2); }
+.legend-note { margin: 0; font: 400 12.5px/1.5 var(--sans); color: var(--ink-2); }
 .legend-static { cursor: default; }
 .legend-static:hover { border-color: transparent; }
 .prose .table-scroll { width: min(1080px, 100vw - 40px); max-width: none; }

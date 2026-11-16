@@ -361,3 +361,28 @@ Where this section and the sections above disagree, this section is what is buil
 7. **Readout and cell labels** name both values; the direction is left out in Facts only.
 8. **Method page** has a short section, "The ‘Both’ lens", saying which channel is which, that the hue is interpretation, and why there is no ramp. The value lists still cover the four single-layer lenses only.
 9. **What the data shows**: Layer 3 is `narrows` on 169 of 172 records, so the lens currently looks like "What happened" in one hue. That is the data, not the encoding.
+
+## 15. Spacing restored after the spec-check and "Both" commits (branch `site-prototype-v2`, 2026-11-15)
+
+Baseline: commit `8aad8a2`, the last first-parent commit before "Merge plan update from main", which is the v2 the author approved. Compared with `git diff 8aad8a2 HEAD -- site-prototype/` and by measuring both versions in headless Chromium at 1440px and 390px.
+
+**What the diff showed.** None of the three later commits edited an existing margin, padding, gap, line-height or height. The masthead, nav, page title, figure frame and controls rows measure the same at both commits. The looser look was lost through the new elements, which were added on a tighter scale than the rest of the page, and through one overflow:
+
+1. The snapshot line had `padding: 4px 20px`, against the banner's `7px 20px` directly above it, so the two read as one cramped band.
+2. The "Both" legend used `gap: 6px` between its rows and `4px 12px` within them. Everywhere else, rows of controls are 10px apart on the landing page (14px on the case page) and legend items use `4px 14px`.
+3. The fifth lens button made "Color by" 403px wide. At 390px it could not wrap, so the landing and case pages scrolled sideways (page width 423px).
+
+**What changed (CSS only, `css/site.css`).**
+
+| Rule | Was | Now |
+|---|---|---|
+| `.snapshot` padding | `4px 20px` | `7px 20px`, same as `.banner` |
+| `.legend-both` row gap | `6px` | `10px`, same as the landing page's control rows |
+| `.legend-channel` gap | `4px 12px` | `4px 14px`, same as `.legend` |
+| `.legend-note` line-height | `1.4` | `1.5`, same as `.fig-foot` at the same size |
+| `.control` | no max width | `max-width: 100%` |
+| `.seg` | one row; separators are `border-left` on each button | `flex-wrap: wrap; max-width: 100%`; separators are a 1px `gap` over the ink background, so a wrapped second row of buttons gets the same 1px rule; buttons grow to fill a wrapped row |
+
+At desktop widths every segmented control is the same size as before (Color by 478px, Route 320px, Sort 288px) and the controls rows keep their old positions and gaps; nothing wraps that did not wrap at `8aad8a2`. At 390px "Color by" now wraps to two rows of buttons ("Both" on the second), and the controls rows below it keep the existing 10px/14px gaps. No page scrolls sideways at 390px.
+
+**Not changed.** The snapshot line, the Data nav item and page, the "Both" lens and its two-row legend, and the four Method sections all stay. The Method sections and the Data page already use existing components (`.prose h2`, `.empty`, `.table`) and so already sit on the page's scale. No data, count, label, colour or behaviour changed; `check_data.py` passes.
