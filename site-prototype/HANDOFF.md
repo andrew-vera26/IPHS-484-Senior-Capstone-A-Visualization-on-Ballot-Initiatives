@@ -39,16 +39,28 @@ All of Steps 0 to 6 are done. Branch `site-prototype`, local commits only, nothi
 - Looked at in headless Chromium at 1440px and 390px, light and dark. No console errors. No horizontal scroll at 390px.
 - Not tested: Safari and Firefox, a screen reader, real touch input, the CSV and JSON downloads beyond code review, the clipboard buttons.
 
+## Second pass (2026-11-15, branch `site-prototype-v2`)
+Working copy: the `what-survives-v2` worktree. The original folder and branch were not touched. Local commits only, nothing pushed. Decisions are in `docs/design/DESIGN.md` section 13.
+
+- Landing: short headline, strips above the fold, route explainer under the figure, newest first by default, compact candidate list, one "Not coded yet" line per route (`js/home.js`).
+- Light theme by default, two-state dark toggle (`js/chrome.js`, inline script in each HTML page).
+- Section labels stack in rows instead of clipping (`layoutLabels` in `js/strip.js`).
+- Pinned thin strip while a panel is open (`js/case.js`, `.pin` in the CSS); the banner now stays stuck.
+- Panel text shown as paragraphs by CSS only, with "Show line breaks as stored" (`js/panel.js`).
+
+Verified in headless Chromium at 1440px and 390px: no console errors on any page, no horizontal scroll, `check_data.py` passes, Missouri still shows 102 cells, 32 components, 3 inherited, 1 hidden-change mark; rendered panel text equals stored text for all records (796 renders, 0 mismatches). Dark theme was looked at on the landing page only. Not tested: Safari, Firefox, a screen reader, touch.
+
 ## Known issues
 - With 17 Layer 2 values, some Type colors are close to each other.
 - On a phone the dependency arcs cross wrapped rows and are hard to follow.
 - The 12,000-character South Dakota provision makes one very wide cell when "Width by text length" is on. That is what the toggle means, and it is why it is off by default.
+- The pinned strip's cells are about 2px wide on a phone; use its previous and next buttons there.
 - `python3 -m http.server` lets the browser cache CSS and JS. After editing, hard-reload.
 - The mode switch is stored in `localStorage`, so it persists between visits; a link with `?mode=facts` overrides it.
 - Schema and data mismatches are logged in `docs/log/friction-log.md`, entries 9 to 20.
 
 ## Rules that bind every session
-Branch `site-prototype`. Never push. Never write to `data/`, `gold/`, `spec/`. Never touch the docs workflow. No fabricated data: anything missing says "Not coded yet" and names what is needed. Never reword stored text. Every count is computed. Route A and Route B are never pooled. Only `js/data.js` knows field names.
+Branch `site-prototype-v2` (the original is `site-prototype`). Never push. Never write to `data/`, `gold/`, `spec/`. Never touch the docs workflow. No fabricated data: anything missing says "Not coded yet" and names what is needed. Never reword stored text. Every count is computed. Route A and Route B are never pooled. Only `js/data.js` knows field names.
 
 ## Next
 See `docs/design/DESIGN.md` section 12.

@@ -47,3 +47,7 @@ Mismatches between what the display needs and what the schema and files provide.
 **19. Citations are not unique and some are approximate.** South Dakota has 39 distinct citations over 70 records, several marked "(approx.)" or "12-28-X". Section grouping on the strip is derived by a heuristic in `data.js`.
 
 **20. Brief named files that do not exist.** `docs/workflow/plan.md` and `spec/v1/01-Project-Context-What-Survives.txt` are not in the repository. `docs/planning.md` refers to the first.
+
+**21. Stored texts mix two line-break conventions.** Found 2026-11-15 in the second site pass. South Dakota comparison texts are hard-wrapped (330 single line breaks inside paragraphs); base texts and all Missouri texts are not. The site now draws those breaks as spaces for display only. The schema does not say whether line breaks in witness text are meaningful, which will matter when span offsets are filled.
+
+**22. The "persistent" banner was not persistent.** It scrolled away with the masthead in the first prototype, and the first session's checks did not catch it. Fixed in the second pass.
