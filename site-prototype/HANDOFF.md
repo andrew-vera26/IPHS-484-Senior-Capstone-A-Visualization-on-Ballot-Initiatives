@@ -48,7 +48,7 @@ Working copy: the `what-survives-v2` worktree. The original folder and branch we
 - Pinned thin strip while a panel is open (`js/case.js`, `.pin` in the CSS); the banner now stays stuck.
 - Panel text shown as paragraphs by CSS only, with "Show line breaks as stored" (`js/panel.js`).
 
-Verified in headless Chromium at 1440px and 390px: no console errors on any page, no horizontal scroll, `check_data.py` passes, Missouri still shows 102 cells, 32 components, 3 inherited, 1 hidden-change mark; rendered panel text equals stored text for all records (796 renders, 0 mismatches). Dark theme was looked at on the landing page only. Not tested: Safari, Firefox, a screen reader, touch.
+Verified in headless Chromium at 1440px and 390px: no console errors on any page, no horizontal scroll, `check_data.py` passes, Missouri still shows 102 cells, 32 components, 3 inherited, 1 hidden-change mark; rendered panel text equals stored text for all records (796 renders, 0 mismatches). Dark theme checked on the landing, case and patterns pages. Not tested: Safari, Firefox, a screen reader, touch.
 
 ## Known issues
 - With 17 Layer 2 values, some Type colors are close to each other.
