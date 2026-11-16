@@ -1,4 +1,4 @@
-// home.js — the entry page: what this is, the two routes, and every coded case as one strip.
+// home.js — the entry page: one line on what this is, every coded case as one strip, then the two routes.
 import { h, clear, fill, params, setParams, fmt, routeBadge, figure, segmented } from './util.js';
 import { loadCorpus, ROUTES } from './data.js';
 import { mountChrome, getMode, onMode } from './chrome.js';
@@ -17,12 +17,12 @@ const state = {
   sort: ['year', 'route', 'topic'].includes(q.get('sort')) ? q.get('sort') : 'year',
 };
 
+// The route explainer, shortened: one sentence per route and its own counts. It sits under the strips.
 function routesBlock(corpus) {
-  return h('section.routes', { 'aria-label': 'The two routes' }, ...['A', 'B'].map((r) => {
+  return h('section.routes.routes-compact', { id: 'routes', 'aria-label': 'The two routes' }, ...['A', 'B'].map((r) => {
     const listed = corpus.byRoute(r), coded = corpus.codedByRoute(r);
     return h('div.route-card', {},
       routeBadge(r, { long: true }),
-      h('h3', {}, ROUTES[r].by),
       h('p', {}, ROUTES[r].plain, r === 'A'
         ? ' The claim “what voters voted for” applies.'
         : ' The claim “what voters voted for” does not apply.'),
@@ -35,17 +35,17 @@ function routesBlock(corpus) {
 }
 
 main.append(
-  h('h1.page-title', {}, 'What survives when a legislature alters a law that began as a citizen initiative?'),
-  h('p.lede', {}, 'This is a critical edition of altered initiated statutes. Each law is shown provision by provision: the text as enacted beside the text the legislature left, with what happened to each provision coded in layers.'),
-  h('p.prose', {}, h('span.provisional', {}, 'Provisional'),
-    'Everything here was coded by a model and has not been audited by a person. The counts are a hypothesis about two laws. They are not findings. ',
-    h('a', { href: 'about.html#trust' }, 'How far to trust this'), '.'),
+  h('h1.page-title.page-title-home', {}, 'What survives when a legislature alters an initiative?'),
+  h('p.lede.lede-home', {}, 'Each law is one strip, one cell per provision: the text as enacted against the text the legislature left. ',
+    h('span.provisional', {}, 'Provisional'),
+    'Coded by a model, not audited by a person. Counts, not findings. ',
+    h('a', { href: 'about.html#trust' }, 'How far to trust this'), '.'));
+
+const figHost = h('div');
+main.append(figHost,
   routesBlock(corpus),
   h('p.never-pooled', {}, 'The two routes are counted separately everywhere on this site and are never pooled in one figure. ',
     h('a', { href: 'about.html#routes' }, 'Why the route matters'), '.'));
-
-const figHost = h('div');
-main.append(figHost);
 
 function sortCases(list) {
   const by = {
@@ -105,10 +105,10 @@ function draw() {
   fill(figHost, figure({
     id: 'cases',
     title: 'Every coded law as one strip, one cell per provision',
-    subtitle: LENSES[state.lens].subtitle + ' Each strip reads left to right in the order of the law. Short cells are components. Counts are on each case page; none is summed here.',
+    subtitle: LENSES[state.lens].subtitle + ' Strips read left to right in the order of the law. Short cells are components.',
     controls, body,
     source: 'the coded files listed on each case page, and site-prototype/data/corpus-seed.json for the list of cases.',
-    note: 'Strips are equal-width per record, so a longer law has narrower cells. Width carries no meaning. Cases sort within their route; routes are never mixed.',
+    note: 'Counts are on each case page; none is summed here. Strips are equal-width per record, so a longer law has narrower cells. Width carries no meaning. Cases sort within their route; routes are never mixed.',
   }));
 }
 
