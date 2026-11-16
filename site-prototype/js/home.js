@@ -14,7 +14,8 @@ const state = {
   mode: getMode(),
   lens: validLens(q.get('lens') || 'l1', getMode()),
   route: ['A', 'B'].includes(q.get('route')) ? q.get('route') : 'all',
-  sort: ['year', 'route', 'topic'].includes(q.get('sort')) ? q.get('sort') : 'year',
+  // Newest first is the default; 'year' is the old name for oldest first and still resolves.
+  sort: { oldest: 'oldest', year: 'oldest', topic: 'topic' }[q.get('sort')] || 'newest',
 };
 
 // The route explainer, shortened: one sentence per route and its own counts. It sits under the strips.
@@ -49,9 +50,9 @@ main.append(figHost,
 
 function sortCases(list) {
   const by = {
-    year: (a, b) => a.year - b.year || a.title.localeCompare(b.title),
-    route: (a, b) => a.route.localeCompare(b.route) || a.year - b.year,
-    topic: (a, b) => String(a.context?.topic ?? '~').localeCompare(String(b.context?.topic ?? '~')) || a.year - b.year,
+    newest: (a, b) => b.year - a.year || a.title.localeCompare(b.title),
+    oldest: (a, b) => a.year - b.year || a.title.localeCompare(b.title),
+    topic: (a, b) => String(a.context?.topic ?? '~').localeCompare(String(b.context?.topic ?? '~')) || b.year - a.year,
   }[state.sort];
   return [...list].sort(by);
 }
@@ -97,8 +98,8 @@ function draw() {
       options: [{ value: 'all', label: 'Both, separately' }, { value: 'A', label: 'Route A' }, { value: 'B', label: 'Route B' }],
       onChange: (v) => { state.route = v; setParams({ route: v === 'all' ? null : v }); draw(); } }),
     segmented({ label: 'Sort', value: state.sort,
-      options: [{ value: 'year', label: 'Year' }, { value: 'route', label: 'Route' }, { value: 'topic', label: 'Topic' }],
-      onChange: (v) => { state.sort = v; setParams({ sort: v === 'year' ? null : v }); draw(); } }),
+      options: [{ value: 'newest', label: 'Newest first' }, { value: 'oldest', label: 'Oldest first' }, { value: 'topic', label: 'Topic' }],
+      onChange: (v) => { state.sort = v; setParams({ sort: v === 'newest' ? null : v }); draw(); } }),
     h('div.legend-host', {}, buildLegend(corpus.cases.flatMap((c) => c.provisions), state.lens, domains, { methodLinks: true, showCounts: false })),
   ];
 
