@@ -1,0 +1,125 @@
+{
+  "_note": "Seed rows for the site prototype, copied from docs/design/prototype-brief.md. enacted_by: voters = Route A, legislature = Route B. measure_id and coded_file are join keys to files already in this repository, present only for coded cases. No row or fact beyond the brief.",
+  "rows": [
+    {
+      "title": "Missouri Proposition A",
+      "state": "Missouri",
+      "year": 2024,
+      "enacted_by": "voters",
+      "status": "coded_model_unaudited",
+      "altering_instrument": "HB 567, signed July 10, 2025",
+      "link": null,
+      "source_note": null,
+      "measure_id": "MO-2024-PropA",
+      "coded_file": "data/missouri-prop-a/coding/prop-a-provisions-EXAMPLE-coded.json"
+    },
+    {
+      "title": "South Dakota Initiated Measure 22",
+      "state": "South Dakota",
+      "year": 2016,
+      "enacted_by": "voters",
+      "status": "coded_model_unaudited",
+      "altering_instrument": "HB 1069, signed February 2, 2017",
+      "link": null,
+      "source_note": null,
+      "measure_id": "SD-2016-IM22",
+      "coded_file": "data/south-dakota-im22/coding/im22-provisions-EXAMPLE-coded.json"
+    },
+    {
+      "title": "Missouri Proposition B",
+      "state": "Missouri",
+      "year": 2010,
+      "enacted_by": "voters",
+      "status": "candidate_unverified",
+      "altering_instrument": null,
+      "link": null,
+      "source_note": null,
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Utah Proposition 4",
+      "state": "Utah",
+      "year": 2018,
+      "enacted_by": "voters",
+      "status": "candidate_unverified",
+      "altering_instrument": null,
+      "link": null,
+      "source_note": null,
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Maine income surcharge",
+      "state": "Maine",
+      "year": 2016,
+      "enacted_by": "voters",
+      "status": "candidate_unverified",
+      "altering_instrument": null,
+      "link": null,
+      "source_note": null,
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Maine minimum wage",
+      "state": "Maine",
+      "year": 2016,
+      "enacted_by": "voters",
+      "status": "candidate_unverified",
+      "altering_instrument": null,
+      "link": null,
+      "source_note": null,
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Michigan minimum wage increase",
+      "state": "Michigan",
+      "year": 2018,
+      "enacted_by": "legislature",
+      "status": "candidate_unverified",
+      "altering_instrument": "adopted by the legislature Sep 5, 2018; amended by SB 1171, Dec 13, 2018",
+      "link": "https://ballotpedia.org/Michigan_Minimum_Wage_Increase_Initiative_(2018)",
+      "source_note": "Ballotpedia list of indirect initiated statutes approved by legislatures; to be verified against primary sources",
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Michigan paid sick leave",
+      "state": "Michigan",
+      "year": 2018,
+      "enacted_by": "legislature",
+      "status": "candidate_unverified",
+      "altering_instrument": "adopted Sep 5, 2018; amended by SB 1175, Dec 13, 2018",
+      "link": "https://ballotpedia.org/Michigan_Paid_Sick_Leave_Initiative_(2018)",
+      "source_note": "Ballotpedia list of indirect initiated statutes approved by legislatures; to be verified against primary sources",
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Michigan repeal of prevailing wages on state projects",
+      "state": "Michigan",
+      "year": 2018,
+      "enacted_by": "legislature",
+      "status": "candidate_unverified",
+      "altering_instrument": "adopted Jun 6, 2018; repealed by HB 4007, 2023",
+      "link": "https://ballotpedia.org/Michigan_Repeal_Prevailing_Wages_and_Fringe_Benefits_on_State_Projects_Initiative_(2018)",
+      "source_note": "Ballotpedia list of indirect initiated statutes approved by legislatures; to be verified against primary sources",
+      "measure_id": null,
+      "coded_file": null
+    },
+    {
+      "title": "Washington Initiative 2081 (parental rights)",
+      "state": "Washington",
+      "year": 2024,
+      "enacted_by": "legislature",
+      "status": "candidate_unverified",
+      "altering_instrument": "approved Mar 4, 2024; amended by HB 1296, signed May 20, 2025",
+      "link": null,
+      "source_note": "Ballotpedia list of indirect initiated statutes approved by legislatures; to be verified against primary sources",
+      "measure_id": null,
+      "coded_file": null
+    }
+  ]
+}
